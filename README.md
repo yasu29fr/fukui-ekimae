@@ -127,8 +127,10 @@ python scripts/build_seed.py 対象店舗.csv
 
 ## ロゴ・アイコン・共有画像
 
-`brand/icon.html`（アイコン）と `brand/og.html`（SNS 共有画像 1200×630）が下絵。直したら
-`node scripts/brand.js` で `docs/` の `favicon-32.png`・`icon-192.png`・`icon-512.png`・`apple-touch-icon.png`・`og.png` を作り直す。
+- ロゴ・ファビコン・ホーム画面のアイコンは、キャラクターのイラスト `brand/avatar-source.webp` から切り出したもの
+  （`brand/avatar-circle.png`＝円、`avatar-face.png`＝顔の拡大（ファビコン用）、`avatar-square.png`＝円の内側の正方形（iPhone 用））。
+  `docs/` の `logo-96.png`・`favicon-32/64.png`・`icon-192/512.png`・`apple-touch-icon.png` はこれを縮小したもの。
+- SNS 共有画像は `brand/og.html` が下絵。直したら `node scripts/brand.js` で `docs/og.png` を作り直す。
 
 ## テスト
 

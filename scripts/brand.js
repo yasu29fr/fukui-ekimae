@@ -1,4 +1,5 @@
-// brand/ の下絵（HTML）から、ファビコン・アイコン・OG 画像を docs/ に書き出す。
+// brand/og.html（SNS 共有画像の下絵）から docs/og.png を書き出す。
+// ファビコン・アイコンは brand/avatar-source.webp（キャラクターのイラスト）から切り出したもの（README 参照）。
 //   node scripts/brand.js        （Playwright が必要。フォントはネットから読む）
 const path = require('path');
 const { chromium } = require(require('child_process').execSync('npm root -g').toString().trim() + '/playwright');
@@ -22,10 +23,6 @@ const ROOT = path.resolve(__dirname, '..');
     } else require('fs').writeFileSync(path.join(ROOT, 'docs', out), buf);
     console.log('wrote', out);
   };
-  await shot('icon.html', '.icon', 'icon-512.png', 512);
-  await shot('icon.html', '.icon', 'icon-192.png', 192);
-  await shot('icon.html', '.icon', 'favicon-32.png', 32);
-  await shot('icon.html', '.icon', 'apple-touch-icon.png', 180, { square: true });
   await shot('og.html', '.og', 'og.png');
   await b.close();
 })();

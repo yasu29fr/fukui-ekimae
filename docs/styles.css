@@ -304,3 +304,8 @@ body[data-mode="day"] h1, body[data-mode="day"] h2, body[data-mode="day"] h3, bo
 body[data-mode="day"] .t-title, body[data-mode="day"] .mood-t b, body[data-mode="day"] .btn, body[data-mode="day"] .seg button,
 body[data-mode="day"] .tabbar > *, body[data-mode="day"] .hd-nav button, body[data-mode="day"] .d-btn b { font-weight: 600; }
 .filters > * { min-width: 0; } .m-search input, .hd-search input { width: 100%; }
+
+/* ロゴマーク：キャラクターのイラスト（丸） */
+.emblem { overflow: hidden; padding: 0; }
+.emblem img { width: 100%; height: 100%; object-fit: cover; display: block; }
+body[data-mode="day"] .emblem { border-radius: 50%; box-shadow: 0 0 0 2px #fff; }
