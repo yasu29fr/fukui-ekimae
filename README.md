@@ -125,6 +125,11 @@ python scripts/build_seed.py 対象店舗.csv
 `docs/data/shops.json`（Supabase 未設定時の表示用）が更新される。同じ店（slug が同じ）は上書きされ、
 オーナーが設定した Instagram は上書きしない。
 
+## ロゴ・アイコン・共有画像
+
+`brand/icon.html`（アイコン）と `brand/og.html`（SNS 共有画像 1200×630）が下絵。直したら
+`node scripts/brand.js` で `docs/` の `favicon-32.png`・`icon-192.png`・`icon-512.png`・`apple-touch-icon.png`・`og.png` を作り直す。
+
 ## テスト
 
 ```bash
