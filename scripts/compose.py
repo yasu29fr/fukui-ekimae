@@ -30,7 +30,7 @@ QUEUE = ROOT / "posts/queue.jsonl"
 FEATURED = ROOT / "state/featured.json"
 LOCAL_DATA = ROOT / "docs/data/shops.json"
 TZ = ZoneInfo("Asia/Tokyo")
-SITE = os.environ.get("SITE_URL", "https://yasu29fr.github.io/fukui-ekimae/").rstrip("/") + "/"
+SITE = os.environ.get("SITE_URL", "https://yu-fukui.github.io/fukui-ekimae/").rstrip("/") + "/"
 ZONES = {"ekimae": "福井駅前", "katamachi": "片町"}
 PR_INTERVAL_DAYS = 30   # 有料のお店は 30 日に 1 回紹介する
 

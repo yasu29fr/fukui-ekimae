@@ -1,7 +1,7 @@
 // お問い合わせ・更新依頼が届いたら、運営にメールで知らせる
 // Supabase の Database Webhook（inquiries / update_requests の INSERT）から呼ばれる。
 // ログイン不要で呼ばれるので、Webhook に設定した合言葉（x-webhook-secret）で確かめる。
-import { json } from "../_shared/util.ts";
+import { json, SITE_URL } from "../_shared/util.ts";
 
 type Payload = { type: string; table: string; record: Record<string, unknown> };
 export type Mail = { subject: string; text: string };
@@ -11,7 +11,7 @@ export type Deps = {
   shopName: (shopId: string) => Promise<string>;
 };
 
-const ADMIN_URL = () => `${(Deno.env.get("SITE_URL") ?? "https://yasu29fr.github.io/fukui-ekimae/").replace(/\/?$/, "/")}admin/`;
+const ADMIN_URL = () => `${SITE_URL}admin/`;
 
 function same(a: string, b: string) {
   if (!a || a.length !== b.length) return false;

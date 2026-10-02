@@ -2,7 +2,8 @@
 
 福井駅前・片町のグルメと夜のお店（バー・スナック・ラウンジ）のガイドサイトと、Threads **@fukui_ekimae** の運用の仕組みです。
 
-- 公開サイト：`https://yasu29fr.github.io/fukui-ekimae/`
+- 公開サイト：`https://yu-fukui.github.io/fukui-ekimae/`
+- Supabase：プロジェクト `fukui-ekimae`（組織 YU_GBP・東京、ID `zynxnpwwmrxzyljrsmbs`）
 - お店の管理画面：`/owner/`（運営が招待したお店の方だけ）
 - 運営管理：`/admin/`（運営者だけ）
 - 投稿予約：`/yoyaku/`（Threads の予約投稿。福井の仕組みと同じもの）
@@ -41,7 +42,7 @@
 
 ## 書体
 
-- 本文：**DNP 秀英角ゴシック銀 Std**（Adobe Fonts。キット `qdm5ekk`、登録ドメイン `yasu29fr.github.io`）＋ **YakuHanJP**（約物を半角に）
+- 本文：**DNP 秀英角ゴシック銀 Std**（Adobe Fonts。キット `qdm5ekk`、登録ドメイン `yu-fukui.github.io`）＋ **YakuHanJP**（約物を半角に）
 - 夜の見出し：M PLUS Rounded 1c、英字：Jost（Google Fonts）
 - 独自ドメインにしたら、[fonts.adobe.com](https://fonts.adobe.com/my_fonts#web_projects-section) のこのキットにドメインを足す（足さないと、そのドメインでは秀英角ゴシック銀が出ず、Zen Kaku Gothic New で表示される）
 
@@ -56,8 +57,8 @@
    3. `private/shops_private.sql`（住所・電話・出典。**リポジトリには入っていない**。運営の手元にあるものを使う）
 3. Authentication → Sign In / Providers → Email：**Allow new users to sign up をオフ**。
 4. Authentication → URL Configuration：
-   - Site URL：`https://yasu29fr.github.io/fukui-ekimae/`
-   - Redirect URLs：`https://yasu29fr.github.io/fukui-ekimae/owner/` と `https://yasu29fr.github.io/fukui-ekimae/admin/`
+   - Site URL：`https://yu-fukui.github.io/fukui-ekimae/`
+   - Redirect URLs：`https://yu-fukui.github.io/fukui-ekimae/owner/` と `https://yu-fukui.github.io/fukui-ekimae/admin/`
 5. Authentication → Emails：**SMTP を設定する**（Resend・Gmail など）。Supabase 標準のメール送信は1時間に数通までしか送れず、招待メールが届かなくなる。
    メールの文面（Invite user / Magic link）は日本語に書き換える。例：件名「ふくふく｜福井エキマエ お店の管理画面へのご招待」。
 6. Project Settings → API の **Project URL** と **anon public キー**を `docs/config.js` に書く（anon キーは公開してよい。service_role キーは書かない）。
@@ -70,7 +71,7 @@
 supabase link --project-ref <プロジェクトID>
 supabase functions deploy invite-owner create-checkout customer-portal
 supabase functions deploy stripe-webhook --no-verify-jwt
-supabase secrets set SITE_URL=https://yasu29fr.github.io/fukui-ekimae/
+supabase secrets set SITE_URL=https://yu-fukui.github.io/fukui-ekimae/
 ```
 
 Stripe の設定（次の 3.）が済んだら：
@@ -121,7 +122,7 @@ supabase secrets set RESEND_API_KEY=re_... NOTIFY_TO=yasu29fr@gmail.com \
    - **Variables**：`SUPABASE_URL`、`SUPABASE_ANON_KEY`、`SITE_URL`（毎晩の投稿づくりで店のデータを読む）
    - **Secrets**：`THREADS_USER_ID`、`THREADS_ACCESS_TOKEN`、`GH_PAT`（トークンの自動更新用）
 3. 予約投稿の起動は、福井の仕組みと同じく外部の cron（cron-job.org など）から 10 分おきに
-   `POST https://api.github.com/repos/yasu29fr/fukui-ekimae/dispatches`、本文 `{"event_type": "threads-tick"}` を送る。
+   `POST https://api.github.com/repos/yu-fukui/fukui-ekimae/dispatches`、本文 `{"event_type": "threads-tick"}` を送る。
    GitHub Actions の `schedule` は遅延・スキップがあるため、保険として残しているだけ。
 
 ### 5. Threads（@fukui_ekimae）
@@ -133,7 +134,7 @@ Meta for Developers でアプリを作り、Threads API の `threads_basic` と 
 ## 店のデータを作り直す
 
 調査で作った店のリスト（CSV）から、初期データを作り直せる。
-リストは非公開の `yasu29fr/fukui-ekimae-data` で作る（`python3 scripts/merge.py` → `list/対象店舗.csv`）。
+リストは非公開の `yu-fukui/fukui-ekimae-data` で作る（`python3 scripts/merge.py` → `list/対象店舗.csv`）。
 
 ```bash
 python scripts/build_seed.py ../fukui-ekimae-data/list/対象店舗.csv

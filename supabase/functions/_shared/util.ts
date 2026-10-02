@@ -48,11 +48,11 @@ export function stripe(): Stripe {
 }
 
 // 「戻り先」URL は自分のサイトのものだけ受け付ける（よそへの転送に使われないように）
+export const SITE_URL = (Deno.env.get("SITE_URL") || "https://yu-fukui.github.io/fukui-ekimae/").replace(/\/?$/, "/");
+
 export function safeReturn(url: unknown): string {
-  const site = Deno.env.get("SITE_URL") ?? "";
-  if (typeof url === "string" && site && url.startsWith(site)) return url;
-  if (!site) throw new HttpError(500, "SITE_URL が未設定です");
-  return site.replace(/\/$/, "") + "/owner/";
+  if (typeof url === "string" && url.startsWith(SITE_URL)) return url;
+  return SITE_URL + "owner/";
 }
 
 export function handle(fn: (req: Request) => Promise<Response>) {

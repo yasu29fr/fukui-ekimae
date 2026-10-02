@@ -40,7 +40,7 @@ jobs:
       - name: 権限（RLS）のテスト
         run: |
           psql -v ON_ERROR_STOP=1 -q -f supabase/tests/stub_supabase.sql
-          psql -v ON_ERROR_STOP=1 -q -f supabase/migrations/0001_init.sql
+          psql -v ON_ERROR_STOP=1 -q -f supabase/migrations/0001_init.sql -f supabase/migrations/0002_harden.sql
           psql -v ON_ERROR_STOP=1 -q -f supabase/tests/rls_test.sql
       - name: 初期データが読み込めるか
         run: psql -v ON_ERROR_STOP=1 -q -f supabase/seed/shops_public.sql -f supabase/seed/shops_public.sql
