@@ -168,30 +168,71 @@
     const s = state.shops.find((x) => x.slug === slug);
     const el = $("#detail");
     if (!s) { location.hash = "#/"; return; }
-    document.body.dataset.mode = s.category === "night" ? "night" : "day";
+    const night = s.category === "night";
+    document.body.dataset.mode = night ? "night" : "day";
     const photos = (s.is_paid && s.photos) || [];
+    const links = (s.is_paid && s.links) || [];
+    // 近くの同じジャンル（同じエリア・同じ区分）。有料のお店を先に。
+    const near = state.shops.filter((x) => x.slug !== s.slug && x.category === s.category && x.zone === s.zone && x.genre === s.genre)
+      .slice(0, 40).sort((a, b) => b.is_paid - a.is_paid).slice(0, 4);
+    const info = [
+      ["エリア", `${ZONES[s.zone] || ""}${s.town ? "・" + s.town : ""}`],
+      ["ジャンル", s.genre],
+      ...(s.is_paid && s.hours ? [["営業時間", s.hours]] : []),
+      ...(s.is_paid && s.holiday ? [["定休日", s.holiday]] : []),
+    ];
     el.innerHTML = `
       <button class="back" type="button" data-back>${svg("back")}一覧にもどる</button>
-      <article class="ticket d-ticket${s.is_paid ? " is-pr" : ""}">
-        ${photos.length ? `<div class="gallery">${photos.map((p) => `<figure><img src="${esc(photoUrl(p))}" alt="${esc(p.caption || s.name)}" loading="lazy" />${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}</figure>`).join("")}</div>` : ""}
-        <div class="t-main">
-          ${stamp(s)}
-          <div class="t-text">
-            <div class="t-tags"><span class="kind"><i></i>${esc(s.genre)}</span>${s.is_paid ? '<span class="pr-tag">PR</span>' : ""}</div>
-            <h1 class="t-title">${esc(s.name)}</h1>
-            ${s.is_paid && s.catch ? `<p class="t-note">${esc(s.catch)}</p>` : ""}
-            ${area(s)}
+      <article class="d-wrap${s.is_paid ? " is-pr" : ""}">
+        ${photos.length ? `
+        <div class="d-hero">
+          <div class="d-slides" id="d-slides">${photos.map((p, i) => `<figure><img src="${esc(photoUrl(p))}" alt="${esc(p.caption || s.name)}" ${i ? 'loading="lazy"' : ""} />${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}</figure>`).join("")}</div>
+          <span class="d-count" id="d-count">1 / ${photos.length}</span>
+          ${photos.length > 1 ? `<div class="d-thumbs">${photos.map((p, i) => `<button type="button" data-slide="${i}" aria-label="${i + 1}枚目" aria-current="${i === 0}"><img src="${esc(photoUrl(p))}" alt="" loading="lazy" /></button>`).join("")}</div>` : ""}
+        </div>` : ""}
+        <header class="d-head">
+          <p class="eyebrow"><span class="band">${night ? "NIGHT" : "GOURMET"}</span>${s.is_paid ? '<span class="pr-tag">PR</span>' : ""}</p>
+          <div class="d-title">
+            ${stamp(s)}
+            <div><h1>${esc(s.name)}</h1>${s.is_paid && s.catch ? `<p class="d-catch">${esc(s.catch)}</p>` : ""}</div>
           </div>
+        </header>
+        <div class="d-actions">
+          ${s.instagram ? `<a class="d-btn ig" href="${igUrl(s.instagram)}" target="_blank" rel="noopener">${svg("ig")}<span><b>Instagram</b><small>@${esc(s.instagram)}</small></span></a>` : ""}
+          <a class="d-btn" href="${mapUrl(s)}" target="_blank" rel="noopener">${svg("map")}<span><b>地図で見る</b><small>Googleマップ</small></span></a>
+          ${links.map((l) => `<a class="d-btn" href="${esc(l.url)}" target="_blank" rel="noopener">${svg("link")}<span><b>${esc(l.label || LINK_LABEL[l.kind] || "リンク")}</b><small>${esc(LINK_LABEL[l.kind] || "")}</small></span></a>`).join("")}
         </div>
-        ${s.is_paid && s.description ? `<div class="d-sec"><h2>お店から</h2><p>${esc(s.description)}</p></div>` : ""}
-        ${s.is_paid && (s.hours || s.holiday) ? `<div class="d-sec"><h2>${svg("clock")}営業時間・定休日</h2><p>${esc(s.hours)}${s.holiday ? `\n定休日：${esc(s.holiday)}` : ""}</p></div>` : ""}
-        ${stub(s, true)}
+        ${s.is_paid && s.description ? `<section class="d-block"><h2><span class="en">MESSAGE</span>お店から</h2><p class="d-desc">${esc(s.description)}</p></section>` : ""}
+        <section class="d-block">
+          <h2><span class="en">INFO</span>店舗情報</h2>
+          <dl class="d-info">${info.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
+          ${s.is_paid ? "" : '<p class="d-small">営業時間などの最新情報は、お店の公式アカウントでご確認ください。</p>'}
+        </section>
       </article>
-      ${s.is_paid ? "" : `<p class="free-note">営業時間などの最新情報は、お店の公式アカウントでご確認ください。<br>このお店の方ですか？ <a href="#inquiry">情報の修正・写真の掲載について</a></p>`}`;
+      ${s.is_paid ? "" : `
+      <aside class="d-owner">
+        <p class="eyebrow"><span class="band">FOR SHOPS</span></p>
+        <h2>このお店の方へ</h2>
+        <p>写真・紹介文・営業時間・予約ページなどを載せて、一覧の上のほうに表示できます（有料プラン：月額1,000円〜）。情報の修正だけでもお気軽にどうぞ。</p>
+        <a class="btn" href="#inquiry">掲載について問い合わせる</a>
+      </aside>`}
+      ${near.length ? `
+      <section class="d-near">
+        <h2 class="sec"><span class="en">NEARBY</span>${esc(ZONES[s.zone])}の${esc(s.genre)}</h2>
+        <ul class="cards">${near.map(card).join("")}</ul>
+      </section>` : ""}`;
     $("#app").hidden = true;
     el.hidden = false;
     document.title = `${s.name}｜ふくふく 福井エキマエ`;
     window.scrollTo(0, 0);
+    const slides = $("#d-slides");
+    if (slides) {
+      slides.addEventListener("scroll", () => {
+        const i = Math.round(slides.scrollLeft / slides.clientWidth);
+        $("#d-count").textContent = `${i + 1} / ${photos.length}`;
+        el.querySelectorAll("[data-slide]").forEach((b) => b.setAttribute("aria-current", String(Number(b.dataset.slide) === i)));
+      }, { passive: true });
+    }
   }
 
   function route() {
@@ -224,6 +265,7 @@
     else if ("zone" in t.dataset && t.closest("#zone-seg")) { state.zone = t.dataset.zone; state.shown = PAGE; remember(); renderList(); }
     else if ("genre" in t.dataset) { state.genre = t.dataset.genre; state.shown = PAGE; renderList(); }
     else if (t.id === "more") { state.shown += PAGE; renderList(); }
+    else if (t.dataset.slide) { const sl = $("#d-slides"); sl.scrollTo({ left: sl.clientWidth * Number(t.dataset.slide), behavior: "smooth" }); }
     else if ("back" in t.dataset) { history.length > 1 ? history.back() : (location.hash = "#/"); }
   });
   for (const id of ["#q", "#q-m"]) {

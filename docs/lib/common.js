@@ -1,9 +1,20 @@
 // オーナー画面・運営画面で共通の部品（Supabase への接続、画像の縮小など）
+import { createDemoClient, demoUrls } from "./demo-sb.js";
+
 export const cfg = window.FUKUFUKU_CONFIG || {};
-export const ready = Boolean(cfg.supabaseUrl && cfg.supabaseAnonKey);
+// ?demo=login / free / owner / admin のときは、見本のデータで画面だけ動かす（保存はされない）
+export const demo = new URLSearchParams(location.search).get("demo");
+const hasDb = Boolean(cfg.supabaseUrl && cfg.supabaseAnonKey);
+export const ready = hasDb || Boolean(demo);
 // 接続先が設定されているときだけ supabase-js を読み込む
-const { createClient } = ready ? await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm") : {};
-export const sb = ready ? createClient(cfg.supabaseUrl, cfg.supabaseAnonKey) : null;
+const { createClient } = hasDb && !demo ? await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm") : {};
+export const sb = demo ? createDemoClient(demo) : hasDb ? createClient(cfg.supabaseUrl, cfg.supabaseAnonKey) : null;
+if (demo) {
+  const bar = document.createElement("div");
+  bar.className = "demo-bar";
+  bar.innerHTML = "<b>見本</b>の画面です（保存はされません）";
+  document.body.prepend(bar);
+}
 
 export const $ = (s, root = document) => root.querySelector(s);
 export const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -15,6 +26,8 @@ export const LINK_KINDS = {
 };
 
 export function photoUrl(path) {
+  if (demoUrls.has(path)) return demoUrls.get(path);
+  if (/^(\.\.?\/|https?:)/.test(path)) return path;
   return `${cfg.supabaseUrl}/storage/v1/object/public/photos/${path.split("/").map(encodeURIComponent).join("/")}`;
 }
 
@@ -63,11 +76,18 @@ export function toast(msg, kind = "") {
 // メールのリンクでログインする画面（招待済みの人だけ。新規登録はさせない）
 export function renderLogin(root, title) {
   root.innerHTML = `
-    <section class="panel narrow">
+    <section class="panel narrow login-card">
+      <div class="emblem-lg" aria-hidden="true">ふ</div>
+      <p class="en">LOGIN</p>
       <h1>${esc(title)}</h1>
-      <p class="muted">登録済みのメールアドレスを入れると、ログイン用のリンクが届きます。パスワードはありません。</p>
+      <p class="muted">登録済みのメールアドレスに、ログイン用のリンクをお送りします。パスワードはいりません。</p>
+      <div class="login-steps">
+        <div><b>01</b>アドレスを入力</div>
+        <div><b>02</b>メールを開く</div>
+        <div><b>03</b>リンクで入る</div>
+      </div>
       <form id="login-form">
-        <label>メールアドレス<input type="email" name="email" required autocomplete="email" /></label>
+        <label>メールアドレス<input type="email" name="email" required autocomplete="email" placeholder="shop@example.com" /></label>
         <button class="btn" type="submit">ログイン用のリンクを送る</button>
         <p class="form-msg" id="login-msg" role="status"></p>
       </form>

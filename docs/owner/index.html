@@ -2,28 +2,33 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="robots" content="noindex" />
   <title>お店の管理｜ふくふく 福井エキマエ</title>
-  <link rel="stylesheet" href="../styles.css?v=1" />
-  <link rel="stylesheet" href="../lib/panel.css?v=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" />
+  <link rel="stylesheet" href="../styles.css?v=13" />
+  <link rel="stylesheet" href="../lib/panel.css?v=4" />
 </head>
-<body data-mode="day">
-  <header class="site-header">
-    <a class="brand" href="../">
-      <span class="brand-mark" aria-hidden="true">ふ</span>
-      <span class="brand-text"><span class="brand-name">ふくふく</span><span class="brand-sub">お店の管理</span></span>
-    </a>
-    <button class="header-link" id="logout" type="button" hidden>ログアウト</button>
+<body data-mode="day" class="console console-owner">
+  <header class="hd">
+    <div class="hd-in">
+      <a class="logo" href="../">
+        <span class="emblem" aria-hidden="true">ふ</span>
+        <span class="logo-t"><small>FOR SHOPS</small><b>お店の管理</b></span>
+      </a>
+      <button class="hd-btn" id="logout" type="button" hidden>ログアウト</button>
+    </div>
   </header>
-  <main id="root"><p class="muted">読み込んでいます…</p></main>
-  <footer class="site-footer">
+  <main id="root" class="wrap console-main"><p class="muted">読み込んでいます…</p></main>
+  <footer class="wrap site-footer">
     <nav class="footer-nav">
       <a href="../terms.html">利用規約</a><a href="../tokushoho.html">特定商取引法に基づく表記</a><a href="../privacy.html">プライバシーポリシー</a>
     </nav>
-    <p class="copy">運営：ふくふく</p>
+    <p class="copy">© ふくふく</p>
   </footer>
   <script src="../config.js?v=1"></script>
-  <script type="module" src="./owner.js?v=1"></script>
+  <script type="module" src="./owner.js?v=4"></script>
 </body>
 </html>

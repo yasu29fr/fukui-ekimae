@@ -50,17 +50,27 @@ async function render(shop) {
     ${shops.length > 1 ? `<section class="panel"><label>お店を切り替える<select id="shop-select">
       ${shops.map((s) => `<option value="${s.id}" ${s.id === shop.id ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></label></section>` : ""}
     <section class="panel">
-      <div class="spread">
-        <div><h1>${esc(shop.name)}</h1>
-          <p class="muted">${esc(ZONES[shop.zone])}${shop.town ? "・" + esc(shop.town) : ""}　${esc(shop.genre)}</p></div>
-        <span class="badge ${paid ? "paid" : ""}">${paid ? PLANS[shop.plan] : "無料プラン"}</span>
+      <div class="shop-hero">
+        <div class="thumb" id="shop-thumb">${shop.category === "night" ? "🍸" : "🍴"}</div>
+        <div style="min-width:0;flex:1">
+          <div class="row"><span class="badge ${paid ? "paid" : ""}">${paid ? PLANS[shop.plan] : "無料プラン"}</span>
+            ${sub && sub.status === "past_due" ? '<span class="badge warn">お支払いが確認できていません</span>' : ""}</div>
+          <h1>${esc(shop.name)}</h1>
+          <p class="muted">${esc(ZONES[shop.zone])}${shop.town ? "・" + esc(shop.town) : ""}　${esc(shop.genre)}</p>
+        </div>
       </div>
-      ${paid && shop.plan_until ? `<p class="muted small">次回の更新日：${fmtDate(shop.plan_until)}${sub && sub.status === "past_due" ? '　<span class="badge warn">お支払いが確認できていません</span>' : ""}</p>` : ""}
-      <p class="small"><a href="../#/shop/${encodeURIComponent(shop.slug)}" target="_blank" rel="noopener">公開ページを見る</a></p>
+      <div class="stats">
+        <div><small>プラン</small><b>${paid ? (shop.plan === "yearly" ? "YEAR" : "MONTH") : "FREE"}</b></div>
+        <div><small>次回の更新日</small><b>${paid && shop.plan_until ? fmtDate(shop.plan_until) : "—"}</b></div>
+        <a class="see" href="../${location.search.includes("demo") ? "?demo=1" : ""}#/shop/${encodeURIComponent(shop.slug)}" target="_blank" rel="noopener">公開ページを見る →</a>
+      </div>
     </section>
     <div id="body"></div>`;
   $("#shop-select")?.addEventListener("change", (e) => render(shops.find((s) => s.id === e.target.value)));
   const body = $("#body");
+  sb.from("shop_photos").select("path").eq("shop_id", shop.id).order("sort").limit(1).then(({ data }) => {
+    if (paid && data?.[0]) $("#shop-thumb").style.backgroundImage = `url('${photoUrl(data[0].path)}')`, ($("#shop-thumb").textContent = "");
+  });
   if (paid) renderPaid(body, shop, sub);
   else renderFree(body, shop);
 }
@@ -70,7 +80,7 @@ async function renderFree(body, shop) {
   const { data: reqs } = await sb.from("update_requests").select("*").eq("shop_id", shop.id).order("created_at", { ascending: false }).limit(10);
   body.innerHTML = `
     <section class="panel">
-      <h2>掲載内容の更新依頼</h2>
+      <h2><span class="en">REQUEST</span>掲載内容の更新依頼</h2>
       <p class="muted">店名・ジャンル・Instagram などを直したいときは、ここから運営に依頼してください。確認して反映します。</p>
       <form id="req-form">
         <label>直したい内容<textarea name="body" rows="5" maxlength="2000" required placeholder="例：Instagram のアカウントが変わりました。新しいアカウントは @xxxx です。"></textarea></label>
@@ -96,7 +106,7 @@ async function renderFree(body, shop) {
 function upgradeSection(shop) {
   return `
     <section class="panel" id="upgrade">
-      <h2>有料プランにする</h2>
+      <h2><span class="en">UPGRADE</span>有料プランにする</h2>
       <p class="muted">有料プランにすると、次のことができるようになります。</p>
       <ul class="perks">${PERKS.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>
       <div class="plans">
@@ -106,7 +116,8 @@ function upgradeSection(shop) {
           <button class="btn" data-plan="monthly" type="button">月額で申し込む</button>
         </div>
         <div class="plan best">
-          <span class="muted">年額プラン　<span class="badge paid">2か月分お得</span></span>
+          <span class="ribbon">2か月分お得</span>
+          <span class="muted">年額プラン</span>
           <span class="price">10,000円<small>／年（税込）</small></span>
           <button class="btn" data-plan="yearly" type="button">年額で申し込む</button>
         </div>
@@ -139,7 +150,7 @@ async function renderPaid(body, shop, sub) {
   ]);
   body.innerHTML = `
     <section class="panel">
-      <h2>お店の情報</h2>
+      <h2><span class="en">PROFILE</span>お店の情報</h2>
       <form id="info-form">
         <label>ひとこと（40字まで・一覧に出ます）<input name="catch" maxlength="40" value="${esc(shop.catch)}" placeholder="例：駅前で21時から朝まで。一人飲み歓迎" /></label>
         <label>紹介文（400字まで）<textarea name="description" rows="6" maxlength="400">${esc(shop.description)}</textarea></label>
@@ -152,8 +163,7 @@ async function renderPaid(body, shop, sub) {
     </section>
 
     <section class="panel">
-      <div class="spread"><h2>写真（${photos.length}/${MAX_PHOTOS}枚）</h2>
-        <label class="btn-ghost" ${photos.length >= MAX_PHOTOS ? "hidden" : ""}>写真を追加<input id="photo-input" type="file" accept="image/*" multiple hidden /></label></div>
+      <h2><span class="en">PHOTOS</span>写真（${photos.length}/${MAX_PHOTOS}枚）</h2>
       <p class="muted small">1枚目がトップ写真になります。写真は自動で縮小され、撮影場所などの情報は消えます。</p>
       <div class="photos" id="photos">${photos.map((p, i) => `
         <div class="photo" data-id="${p.id}">
@@ -167,12 +177,13 @@ async function renderPaid(body, shop, sub) {
               <button class="icon-btn danger" data-del>削除</button>
             </div>
           </div>
-        </div>`).join("") || '<p class="muted">まだ写真がありません。</p>'}</div>
+        </div>`).join("")}
+        ${photos.length < MAX_PHOTOS ? `<label class="add-photo"><span>＋<br>写真を追加<br><small>あと${MAX_PHOTOS - photos.length}枚</small></span><input id="photo-input" type="file" accept="image/*" multiple hidden /></label>` : ""}</div>
       <p class="form-msg" id="photo-msg" role="status"></p>
     </section>
 
     <section class="panel">
-      <h2>リンク（${links.length}/${MAX_LINKS}件）</h2>
+      <h2><span class="en">LINKS</span>リンク（${links.length}/${MAX_LINKS}件）</h2>
       <ul class="list" id="links">${links.map((l, i) => `
         <li data-id="${l.id}"><div class="spread">
           <span><strong>${esc(l.label || LINK_KINDS[l.kind])}</strong><br><span class="small muted">${esc(l.url)}</span></span>
@@ -188,7 +199,7 @@ async function renderPaid(body, shop, sub) {
     </section>
 
     <section class="panel">
-      <h2>ご契約</h2>
+      <h2><span class="en">PLAN</span>ご契約</h2>
       <p class="muted">${PLANS[shop.plan]}${shop.plan_until ? `・次回の更新日 ${fmtDate(shop.plan_until)}` : ""}</p>
       ${sub ? '<button class="btn-ghost" id="portal" type="button">お支払い方法の変更・解約</button>' : '<p class="muted small">運営が設定した有料プランです。変更は運営にご連絡ください。</p>'}
     </section>`;

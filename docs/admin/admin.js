@@ -26,7 +26,7 @@ async function show() {
   ]);
   root.innerHTML = `
     <div class="tabs" role="tablist">
-      ${[["requests", `更新依頼（${nReq ?? 0}）`], ["inquiries", `問い合わせ（${nInq ?? 0}）`], ["shops", "店"], ["photos", "写真"]]
+      ${[["requests", `更新依頼${nReq ? `<span class="num">${nReq}</span>` : ""}`], ["inquiries", `問い合わせ${nInq ? `<span class="num">${nInq}</span>` : ""}`], ["shops", "店"], ["photos", "写真"]]
         .map(([k, v]) => `<button role="tab" data-tab="${k}" aria-selected="${tab === k}">${v}</button>`).join("")}
     </div>
     <div id="pane"></div>`;
@@ -36,7 +36,7 @@ async function show() {
 
 async function showRequests(pane) {
   const { data } = await sb.from("update_requests").select("*, shops(name, slug, id)").order("status").order("created_at", { ascending: false }).limit(100);
-  pane.innerHTML = `<section class="panel"><h2>更新依頼</h2>${data?.length ? `<ul class="list">${data.map((r) => `
+  pane.innerHTML = `<section class="panel"><h2><span class="en">REQUESTS</span>更新依頼</h2>${data?.length ? `<ul class="list">${data.map((r) => `
     <li data-id="${r.id}">
       <div class="spread"><strong>${esc(r.shops?.name)}</strong><span class="small muted">${fmtDate(r.created_at)}</span></div>
       <p style="white-space:pre-wrap;margin:6px 0">${esc(r.body)}</p>
@@ -57,7 +57,7 @@ async function showRequests(pane) {
 
 async function showInquiries(pane) {
   const { data } = await sb.from("inquiries").select("*").order("status").order("created_at", { ascending: false }).limit(100);
-  pane.innerHTML = `<section class="panel"><h2>掲載の問い合わせ</h2>${data?.length ? `<ul class="list">${data.map((r) => `
+  pane.innerHTML = `<section class="panel"><h2><span class="en">INQUIRIES</span>掲載の問い合わせ</h2>${data?.length ? `<ul class="list">${data.map((r) => `
     <li data-id="${r.id}"><div class="spread"><strong>${esc(r.shop_name)}</strong><span class="small muted">${fmtDate(r.created_at)}</span></div>
       <p class="small">連絡先：${esc(r.contact)}</p><p style="white-space:pre-wrap;margin:4px 0">${esc(r.message)}</p>
       ${r.status === "open" ? '<button class="btn-ghost" data-done>対応済みにする</button>' : '<span class="badge paid">対応済み</span>'}</li>`).join("")}</ul>` : '<p class="muted">問い合わせはありません。</p>'}</section>`;
@@ -68,7 +68,7 @@ async function showInquiries(pane) {
 }
 
 async function showShops(pane) {
-  pane.innerHTML = `<section class="panel"><h2>店を探す</h2>
+  pane.innerHTML = `<section class="panel"><h2><span class="en">SHOPS</span>店を探す</h2>
     <div class="row"><input id="shop-q" placeholder="店名で検索" style="flex:1" />
       <select id="shop-f"><option value="">すべて</option><option value="paid">有料</option><option value="hidden">非表示</option><option value="members">オーナーあり</option></select>
       <button class="btn-ghost" id="shop-new">店を追加</button></div>
@@ -83,7 +83,7 @@ async function showShops(pane) {
     if (error) return toast(error.message, "error");
     const rows = f === "members" ? data.filter((s) => s.shop_members.length) : data;
     $("#shop-results").innerHTML = `<table class="grid"><tbody>${rows.map((s) => `
-      <tr><td><a href="#" data-open="${s.id}">${esc(s.name)}</a></td><td class="small">${esc(ZONES[s.zone])}・${esc(s.town)}</td>
+      <tr><td><a href="#" data-open="${s.id}">${esc(s.name)}</a></td><td class="small nw">${esc(ZONES[s.zone])}・${esc(s.town)}</td>
       <td class="small">${isPaid(s) ? '<span class="badge paid">有料</span>' : ""}${s.is_hidden ? '<span class="badge off">非表示</span>' : ""}${s.shop_members.length ? ` 👤${s.shop_members.length}` : ""}</td></tr>`).join("")}</tbody></table>`;
   };
   let t; $("#shop-q").addEventListener("input", () => { clearTimeout(t); t = setTimeout(run, 250); });
@@ -167,7 +167,7 @@ async function openShop(pane, id) {
 
 async function showPhotos(pane) {
   const { data } = await sb.from("shop_photos").select("*, shops(name)").order("created_at", { ascending: false }).limit(60);
-  pane.innerHTML = `<section class="panel"><h2>新しい写真</h2><p class="muted small">問題のある写真は「非表示」にすると、公開ページから消えます（オーナーには「運営により非表示」と出ます）。</p>
+  pane.innerHTML = `<section class="panel"><h2><span class="en">PHOTOS</span>新しい写真</h2><p class="muted small">問題のある写真は「非表示」にすると、公開ページから消えます（オーナーには「運営により非表示」と出ます）。</p>
     <div class="photos">${(data || []).map((p) => `<div class="photo" data-id="${p.id}"><img src="${esc(photoUrl(p.path))}" alt="" loading="lazy" />
       <div class="tools"><span class="small">${esc(p.shops?.name)}</span><span class="small muted">${fmtDate(p.created_at)}</span>
       <button class="icon-btn ${p.is_hidden ? "" : "danger"}" data-hide="${p.is_hidden ? 0 : 1}">${p.is_hidden ? "表示に戻す" : "非表示にする"}</button></div></div>`).join("") || '<p class="muted">写真はまだありません。</p>'}</div></section>`;
