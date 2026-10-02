@@ -286,7 +286,13 @@
       if (location.hash.startsWith("#/shop/")) location.hash = "#/"; else renderList();
     });
   }
-  window.addEventListener("hashchange", route);
+  // 「掲載について問い合わせる」（#inquiry）から来たときは、お店の方へのフォームを開いてそこへ移る
+  function openInquiry() {
+    const d = $("#inquiry"); d.open = true;
+    setTimeout(() => d.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+  }
+  window.addEventListener("hashchange", () => (location.hash === "#inquiry" ? openInquiry() : route()));
+  if (location.hash === "#inquiry") setTimeout(openInquiry, 300);
 
   $("#inquiry-form").addEventListener("submit", async (e) => {
     e.preventDefault();

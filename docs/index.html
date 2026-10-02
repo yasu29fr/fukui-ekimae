@@ -31,7 +31,7 @@
   </script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yakuhanjp@4.1.1/dist/css/yakuhanjp.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" />
-  <link rel="stylesheet" href="./styles.css?v=23" />
+  <link rel="stylesheet" href="./styles.css?v=24" />
 </head>
 <body data-mode="day">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -108,18 +108,20 @@
 
   <section id="detail" class="wrap detail" hidden></section>
 
-  <section class="wrap inquiry" id="inquiry">
-    <div class="inq-card">
-      <h2>お店の方へ</h2>
-      <p>情報の修正・掲載の取りやめ・写真やリンクの掲載（有料プラン）は、こちらからご連絡ください。運営から折り返します。</p>
-      <form id="inquiry-form">
-        <label>店名<input name="shop_name" required maxlength="100" /></label>
-        <label>ご連絡先（メールアドレスまたは電話番号）<input name="contact" required maxlength="200" /></label>
-        <label>ご用件<textarea name="message" rows="3" maxlength="2000"></textarea></label>
-        <button type="submit" class="btn">送信する</button>
-        <p class="form-msg" id="inquiry-msg" role="status"></p>
-      </form>
-    </div>
+  <section class="wrap inquiry">
+    <details class="inq" id="inquiry">
+      <summary>お店の方へ　<small>掲載・情報の修正・写真の掲載について</small></summary>
+      <div class="inq-body">
+        <p>情報の修正・掲載の取りやめ・写真やリンクの掲載（有料プラン）は、こちらからご連絡ください。運営から折り返します。</p>
+        <form id="inquiry-form">
+          <label>店名<input name="shop_name" required maxlength="100" /></label>
+          <label>ご連絡先（メールアドレスまたは電話番号）<input name="contact" required maxlength="200" /></label>
+          <label>ご用件<textarea name="message" rows="3" maxlength="2000"></textarea></label>
+          <button type="submit" class="btn">送信する</button>
+          <p class="form-msg" id="inquiry-msg" role="status"></p>
+        </form>
+      </div>
+    </details>
   </section>
 
   <footer class="wrap site-footer">
@@ -142,6 +144,6 @@
   </nav>
 
   <script src="./config.js?v=1"></script>
-  <script src="./app.js?v=17"></script>
+  <script src="./app.js?v=18"></script>
 </body>
 </html>
