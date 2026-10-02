@@ -22,8 +22,8 @@
     ],
     night: [
       { id: "bar", icon: "🍸", label: "しっぽりバー", sub: "カクテル・洋酒", genres: ["バー"] },
-      { id: "snack", icon: "🎤", label: "歌えるスナック", sub: "スナック・ラウンジ", genres: ["スナック・ラウンジ"] },
-      { id: "ekimae", icon: "🚉", label: "駅前で一杯", sub: "電車の前にさくっと", zone: "ekimae" },
+      { id: "snack", icon: "🎤", label: "歌えるスナック", sub: "カラオケ・ママ", genres: ["スナック・ラウンジ"] },
+      { id: "ekimae", icon: "🚉", label: "駅前で一杯", sub: "電車前にさくっと", zone: "ekimae" },
       { id: "katamachi", icon: "🏮", label: "片町ではしご", sub: "二軒目・三軒目に", zone: "katamachi" },
     ],
   };
@@ -134,7 +134,10 @@
     document.body.dataset.mode = state.mode;
     document.querySelectorAll("[data-mode]").forEach((b) => b.tagName === "BUTTON" && b.setAttribute("aria-pressed", String(b.dataset.mode === state.mode)));
     document.querySelectorAll("#zone-seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.zone === state.zone)));
-    document.querySelector('meta[name="theme-color"]').content = night ? "#2f2b55" : "#c8553d";
+    document.querySelector('meta[name="theme-color"]').content = night ? "#108474" : "#e2602a";
+    $("#ph-band").textContent = night ? "NIGHT" : "GOURMET";
+    const now = new Date(), season = ["WINTER", "WINTER", "SPRING", "SPRING", "SPRING", "SUMMER", "SUMMER", "SUMMER", "AUTUMN", "AUTUMN", "AUTUMN", "WINTER"][now.getMonth()];
+    $("#season").textContent = `${now.getFullYear()} ${season}`;
     $("#ph-title").textContent = night ? "夜のお店" : "グルメ";
     $("#ph-icon").setAttribute("href", night ? "#i-glass" : "#i-bowl");
     $("#lead").textContent = night ? "片町と駅前の、バー・スナック・ラウンジ。" : "福井駅前と片町で、きょう行くお店を。";

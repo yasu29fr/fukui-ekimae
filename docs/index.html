@@ -7,11 +7,11 @@
   <meta name="description" content="福井駅前と片町のグルメ、バー・スナック・ラウンジを探せる地元のお店ガイド。" />
   <meta property="og:title" content="ふくふく｜福井エキマエ" />
   <meta property="og:description" content="福井駅前と片町のグルメ、バー・スナック・ラウンジを探せる地元のお店ガイド。" />
-  <meta name="theme-color" content="#c8553d" />
+  <meta name="theme-color" content="#e2602a" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" />
-  <link rel="stylesheet" href="./styles.css?v=5" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" />
+  <link rel="stylesheet" href="./styles.css?v=7" />
 </head>
 <body data-mode="day">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -48,6 +48,7 @@
 
   <main id="app" class="wrap">
     <section class="page-head">
+      <p class="eyebrow"><span class="band" id="ph-band">GOURMET</span><span class="season" id="season"></span></p>
       <p class="lead" id="lead"></p>
       <div class="ph-row">
         <span class="ph-icon" aria-hidden="true"><svg class="i"><use id="ph-icon" href="#i-bowl"/></svg></span>
@@ -57,7 +58,7 @@
     </section>
 
     <section class="moods" aria-label="きょうの気分">
-      <h2 class="moods-t">きょうの気分は？</h2>
+      <h2 class="moods-t"><span class="en">MOOD</span>きょうの気分は？</h2>
       <div class="mood-row" id="moods"></div>
     </section>
 
@@ -75,7 +76,7 @@
       <div class="chips" id="genre-chips" role="group" aria-label="ジャンル"></div>
     </section>
 
-    <h2 class="sec"><svg class="i"><use href="#i-pin"/></svg><span id="sec-title">お店</span></h2>
+    <h2 class="sec"><span class="en">SHOPS</span><span id="sec-title">お店</span></h2>
     <ul class="cards" id="cards"></ul>
     <button class="more" id="more" hidden>もっと見る</button>
   </main>
@@ -116,6 +117,6 @@
   </nav>
 
   <script src="./config.js?v=1"></script>
-  <script src="./app.js?v=5"></script>
+  <script src="./app.js?v=7"></script>
 </body>
 </html>
