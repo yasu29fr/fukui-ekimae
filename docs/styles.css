@@ -3,9 +3,9 @@
    昼は「のれん」、夜は「夕暮れの路地」の配色。夜も背景は明るめにして暗くしすぎない。 */
 :root {
   /* 昼（グルメ）：墨と朱。黒はリッチブラック、背景はごく薄い生成り、差し色は判子の朱色だけ */
-  --bg: #faf9f6; --surface: #ffffff; --ink: #0d0d0f; --muted: #6b6862; --line: #e7e3dc;
+  --bg: #f7f6e4; --surface: #ffffff; --ink: #0d0d0f; --muted: #6b6858; --line: #e4e1cc;
   --hd: #0b0b0d; --hd-deep: #000000; --hd-ink: #ffffff;
-  --main: #0d0d0f; --main-soft: #efede8; --accent: #c4372c; --accent-soft: #f8e6e3;
+  --main: #0d0d0f; --main-soft: #eeecd8; --accent: #c4372c; --accent-soft: #f8e6e3;
   --stamp: #c4372c; --pr: #c4372c; --pr-soft: #fcefed; --band: #c4372c;
   --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 8px 22px rgba(0, 0, 0, .05);
   --tabbar: 64px; --radius: 18px;
@@ -285,3 +285,8 @@ body[data-mode="day"] .band { color: #fff; }
 body[data-mode="day"] .mood-t b { letter-spacing: .02em; }
 .mood-t b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 420px) { .mood-t b { font-size: .82rem; } .mood { gap: 8px; padding: 10px; } .mood-ic { width: 36px; height: 36px; font-size: 1.15rem; } }
+
+/* 写真つきのカード・詳細には色の線を付けない（写真をそのまま見せる） */
+.ticket:has(.t-photo)::before { display: none; }
+.d-wrap.is-pr { border-top: 0; }
+.d-wrap:has(.d-hero) { border-top: 0; }
