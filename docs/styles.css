@@ -290,3 +290,11 @@ body[data-mode="day"] .mood-t b { letter-spacing: .02em; }
 .ticket:has(.t-photo)::before { display: none; }
 .d-wrap.is-pr { border-top: 0; }
 .d-wrap:has(.d-hero) { border-top: 0; }
+
+/* ボタンの色：グルメは朱色、夜はメインの紫 */
+:root { --btn: #c4372c; --btn-ink: #ffffff; }
+body[data-mode="night"] { --btn: #62448c; }
+.btn, .seg button[aria-pressed="true"], .chip[aria-pressed="true"], .mood[aria-pressed="true"] { background: var(--btn); border-color: var(--btn); color: var(--btn-ink); }
+.chip[aria-pressed="true"] small { color: inherit; opacity: .8; }
+.btn:hover { filter: brightness(1.08); }
+body[data-mode="day"] .chip[aria-pressed="true"], body[data-mode="day"] .seg button[aria-pressed="true"] { background: var(--btn); border-color: var(--btn); color: #fff; }

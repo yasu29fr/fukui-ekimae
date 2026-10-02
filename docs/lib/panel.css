@@ -75,3 +75,4 @@ table.grid a { font-weight: 700; text-decoration: none; }
 .toast.error { background: #b3261e; color: #fff; }
 .list .btn, .list .btn-ghost { padding: 7px 14px; font-size: .82rem; }
 @media (max-width: 600px) { .tabs button { padding: 6px 12px; font-size: .8rem; } }
+body.console-admin { --btn: #3d5566; }
