@@ -30,6 +30,10 @@ function seed(role) {
       { id: "p1", shop_id: SHOP_PAID, path: "../demo/bar-1.jpg", caption: "季節のフルーツカクテル", sort: 0, is_hidden: false, created_at: iso(now - day) },
       { id: "p2", shop_id: SHOP_PAID, path: "../demo/bar-3.jpg", caption: "ボトルの並ぶバックバー", sort: 1, is_hidden: false, created_at: iso(now - 2 * day) },
       { id: "p3", shop_id: SHOP_PAID, path: "../demo/bar-2.jpg", caption: "", sort: 2, is_hidden: false, created_at: iso(now - 3 * day) },
+      ...(role === "admin" ? [
+        { id: "p4", shop_id: "d0000002-1111-0000-0000-000000000000", path: "../demo/cafe-1.jpg", caption: "季節のタルト", sort: 0, is_hidden: false, created_at: iso(now - 2 * 3600000) },
+        { id: "p5", shop_id: "d0000002-1111-0000-0000-000000000000", path: "../demo/cafe-2.jpg", caption: "", sort: 1, is_hidden: false, created_at: iso(now - 5 * day) },
+      ] : []),
     ] : [],
     update_requests: [
       { id: "r1", shop_id: SHOP_FREE, user_id: USER, body: "Instagram のアカウントを作りました。@fukufukuan_soba です。", status: "open", admin_note: "", created_at: iso(now - 3600000) },

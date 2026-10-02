@@ -6,6 +6,16 @@ const TOWNS = ["大手", "順化", "中央", "つくも", "照手", "手寄", "�
 const GENRES = ["和食", "寿司・海鮮", "そば・うどん", "ラーメン", "焼肉・肉料理", "焼鳥・串", "居酒屋", "イタリアン・フレンチ",
   "中華", "アジア・各国料理", "カフェ・スイーツ", "洋食", "バー", "スナック・ラウンジ", "その他"];
 let tab = "requests";
+let cat = "";   // 店・写真の区分：""=すべて / gourmet / night
+const CATS = [["", "すべて"], ["gourmet", "グルメ"], ["night", "夜のお店"]];
+const catSeg = () => `<div class="seg cat-seg" role="group" aria-label="区分">${CATS.map(([k, v]) => `<button type="button" data-cat="${k}" aria-pressed="${cat === k}">${v}</button>`).join("")}</div>`;
+// 区分の切り替え（店・写真のタブ共通）。選んだ区分は両方のタブで引き継ぐ
+function bindCat(pane, rerender) {
+  pane.querySelector(".cat-seg").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-cat]"); if (!b) return;
+    cat = b.dataset.cat; rerender();
+  });
+}
 
 if (!ready) root.innerHTML = `<section class="panel narrow"><h1>Supabase が未設定です</h1><p class="muted">docs/config.js を設定してください。</p></section>`;
 else {
@@ -68,14 +78,16 @@ async function showInquiries(pane) {
 }
 
 async function showShops(pane) {
-  pane.innerHTML = `<section class="panel"><h2><span class="en">SHOPS</span>店を探す</h2>
+  pane.innerHTML = `<section class="panel"><div class="spread"><h2><span class="en">SHOPS</span>店を探す</h2>${catSeg()}</div>
     <div class="row"><input id="shop-q" placeholder="店名で検索" style="flex:1" />
       <select id="shop-f"><option value="">すべて</option><option value="paid">有料</option><option value="hidden">非表示</option><option value="members">オーナーあり</option></select>
       <button class="btn-ghost" id="shop-new">店を追加</button></div>
     <div id="shop-results" style="margin-top:10px"></div></section><div id="shop-edit"></div>`;
   const run = async () => {
-    let q = sb.from("shops").select("id,name,zone,town,genre,plan,plan_until,is_hidden,shop_members(email)").order("name").limit(50);
+    let q = sb.from("shops").select("id,name,zone,town,genre,category,plan,plan_until,is_hidden,shop_members(email)").order("name").limit(50);
     const v = $("#shop-q").value.trim(), f = $("#shop-f").value;
+    if (cat) q = q.eq("category", cat);
+    pane.querySelectorAll(".cat-seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.cat === cat)));
     if (v) q = q.ilike("name", `%${v}%`);
     if (f === "paid") q = q.neq("plan", "free");
     if (f === "hidden") q = q.eq("is_hidden", true);
@@ -83,13 +95,14 @@ async function showShops(pane) {
     if (error) return toast(error.message, "error");
     const rows = f === "members" ? data.filter((s) => s.shop_members.length) : data;
     $("#shop-results").innerHTML = `<table class="grid"><tbody>${rows.map((s) => `
-      <tr><td><a href="#" data-open="${s.id}">${esc(s.name)}</a></td><td class="small nw">${esc(ZONES[s.zone])}・${esc(s.town)}</td>
+      <tr><td><a href="#" data-open="${s.id}">${esc(s.name)}</a></td><td class="small nw">${s.category === "night" ? "夜" : "グルメ"}・${esc(ZONES[s.zone])}・${esc(s.town)}</td>
       <td class="small">${isPaid(s) ? '<span class="badge paid">有料</span>' : ""}${s.is_hidden ? '<span class="badge off">非表示</span>' : ""}${s.shop_members.length ? ` 👤${s.shop_members.length}` : ""}</td></tr>`).join("")}</tbody></table>`;
   };
   let t; $("#shop-q").addEventListener("input", () => { clearTimeout(t); t = setTimeout(run, 250); });
   $("#shop-f").addEventListener("change", run);
   $("#shop-results").addEventListener("click", (e) => { const a = e.target.closest("[data-open]"); if (a) { e.preventDefault(); openShop(pane, a.dataset.open); } });
   $("#shop-new").addEventListener("click", () => openShop(pane, null));
+  bindCat(pane, run);
   run();
 }
 
@@ -166,13 +179,16 @@ async function openShop(pane, id) {
 }
 
 async function showPhotos(pane) {
-  const { data } = await sb.from("shop_photos").select("*, shops(name)").order("created_at", { ascending: false }).limit(60);
-  pane.innerHTML = `<section class="panel"><h2><span class="en">PHOTOS</span>新しい写真</h2><p class="muted small">問題のある写真は「非表示」にすると、公開ページから消えます（オーナーには「運営により非表示」と出ます）。</p>
-    <div class="photos">${(data || []).map((p) => `<div class="photo" data-id="${p.id}"><img src="${esc(photoUrl(p.path))}" alt="" loading="lazy" />
-      <div class="tools"><span class="small">${esc(p.shops?.name)}</span><span class="small muted">${fmtDate(p.created_at)}</span>
+  const { data } = await sb.from("shop_photos").select("*, shops(name, category)").order("created_at", { ascending: false }).limit(200);
+  const rows = (data || []).filter((p) => !cat || p.shops?.category === cat).slice(0, 60);
+  pane.innerHTML = `<section class="panel"><div class="spread"><h2><span class="en">PHOTOS</span>新しい写真</h2>${catSeg()}</div>
+    <p class="muted small">問題のある写真は「非表示」にすると、公開ページから消えます（オーナーには「運営により非表示」と出ます）。</p>
+    <div class="photos">${rows.map((p) => `<div class="photo" data-id="${p.id}"><img src="${esc(photoUrl(p.path))}" alt="" loading="lazy" />
+      <div class="tools"><span class="small">${esc(p.shops?.name)}</span><span class="small muted">${p.shops?.category === "night" ? "夜" : "グルメ"}・${fmtDate(p.created_at)}</span>
       <button class="icon-btn ${p.is_hidden ? "" : "danger"}" data-hide="${p.is_hidden ? 0 : 1}">${p.is_hidden ? "表示に戻す" : "非表示にする"}</button></div></div>`).join("") || '<p class="muted">写真はまだありません。</p>'}</div></section>`;
-  pane.addEventListener("click", async (e) => {
+  bindCat(pane, () => showPhotos(pane));
+  pane.querySelector(".photos").addEventListener("click", async (e) => {
     const b = e.target.closest("[data-hide]"); if (!b) return;
-    await sb.from("shop_photos").update({ is_hidden: b.dataset.hide === "1" }).eq("id", b.closest(".photo").dataset.id); show();
+    await sb.from("shop_photos").update({ is_hidden: b.dataset.hide === "1" }).eq("id", b.closest(".photo").dataset.id); showPhotos(pane);
   });
 }
