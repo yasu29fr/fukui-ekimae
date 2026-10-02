@@ -39,6 +39,12 @@
 | 無償で有料にする | 店を開いてプランと期限を手で設定（Stripe で契約した店は自動で更新されるので触らない） |
 | 翌日の投稿を直す | 投稿予約（`/yoyaku/`）で編集。毎晩21時に翌日ぶんが自動で入る |
 
+## 書体
+
+- 本文：**DNP 秀英角ゴシック銀 Std**（Adobe Fonts。キット `qdm5ekk`、登録ドメイン `yasu29fr.github.io`）＋ **YakuHanJP**（約物を半角に）
+- 夜の見出し：M PLUS Rounded 1c、英字：Jost（Google Fonts）
+- 独自ドメインにしたら、[fonts.adobe.com](https://fonts.adobe.com/my_fonts#web_projects-section) のこのキットにドメインを足す（足さないと、そのドメインでは秀英角ゴシック銀が出ず、Zen Kaku Gothic New で表示される）
+
 ## セットアップ
 
 ### 1. Supabase

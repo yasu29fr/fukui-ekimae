@@ -9,7 +9,7 @@
   --stamp: #c4372c; --pr: #c4372c; --pr-soft: #fcefed; --band: #c4372c;
   --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 8px 22px rgba(0, 0, 0, .05);
   --tabbar: 64px; --radius: 18px;
-  --f-body: "YakuHanJP", "Zen Kaku Gothic New", "Hiragino Sans", system-ui, sans-serif;
+  --f-body: "YakuHanJP", "dnp-shuei-gothic-gin-std", "Zen Kaku Gothic New", "Hiragino Sans", system-ui, sans-serif;
   --f-head: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", var(--f-body);
   --f-en: "Jost", var(--f-body);
 }
@@ -298,3 +298,9 @@ body[data-mode="night"] { --btn: #62448c; }
 .chip[aria-pressed="true"] small { color: inherit; opacity: .8; }
 .btn:hover { filter: brightness(1.08); }
 body[data-mode="day"] .chip[aria-pressed="true"], body[data-mode="day"] .seg button[aria-pressed="true"] { background: var(--btn); border-color: var(--btn); color: #fff; }
+
+/* 秀英角ゴシック銀は M（500）と B（600）。見出しの太さは B に合わせる */
+body[data-mode="day"] h1, body[data-mode="day"] h2, body[data-mode="day"] h3, body[data-mode="day"] .logo-t b,
+body[data-mode="day"] .t-title, body[data-mode="day"] .mood-t b, body[data-mode="day"] .btn, body[data-mode="day"] .seg button,
+body[data-mode="day"] .tabbar > *, body[data-mode="day"] .hd-nav button, body[data-mode="day"] .d-btn b { font-weight: 600; }
+.filters > * { min-width: 0; } .m-search input, .hd-search input { width: 100%; }
