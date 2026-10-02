@@ -1,0 +1,279 @@
+// お店の管理画面（オーナー用）
+// 無料：更新依頼を送る / 有料：店の情報・写真（5枚）・リンク（10件）を直接編集
+import { sb, ready, cfg, $, esc, ZONES, PLANS, LINK_KINDS, photoUrl, isPaid, fmtDate, shrinkImage, callFn, toast, renderLogin } from "../lib/common.js";
+
+const root = $("#root");
+const MAX_PHOTOS = 5, MAX_LINKS = 10;
+const PERKS = [
+  "お店の情報をこの画面から直接編集",
+  "写真を5枚まで掲載（一覧ではトップ写真つきで表示）",
+  "ひとこと・紹介文・営業時間・定休日を掲載",
+  "ホームページ・食べログ・予約ページなど、リンクを10件まで",
+  "一覧で上のほうに表示（PR表記つき）",
+  "Threads @" + (cfg.threads || "fukui_ekimae") + " での紹介投稿（PR表記つき）",
+];
+
+if (!ready) {
+  root.innerHTML = `<section class="panel narrow"><h1>ただいま準備中です</h1><p class="muted">お店の管理画面は近日公開予定です。</p></section>`;
+} else {
+  sb.auth.onAuthStateChange((_e, session) => (session ? showShops(session) : renderLogin(root, "お店の管理画面にログイン")));
+  $("#logout").addEventListener("click", async () => { await sb.auth.signOut(); location.reload(); });
+}
+
+let current = null;   // { session, shops }
+
+async function showShops(session) {
+  $("#logout").hidden = false;
+  const { data: members, error } = await sb.from("shop_members").select("shop_id").eq("user_id", session.user.id);
+  if (error) return (root.innerHTML = `<p class="panel">読み込めませんでした：${esc(error.message)}</p>`);
+  if (!members.length) {
+    root.innerHTML = `<section class="panel narrow"><h1>お店が紐付いていません</h1>
+      <p class="muted">${esc(session.user.email)} に紐付いたお店がありません。運営にお問い合わせください。</p></section>`;
+    return;
+  }
+  const ids = members.map((m) => m.shop_id);
+  const { data: shops } = await sb.from("shops").select("*").in("id", ids).order("name");
+  current = { session, shops };
+  const want = new URLSearchParams(location.search).get("shop");
+  const shop = shops.find((s) => s.id === want) || shops[0];
+  render(shop);
+  const checkout = new URLSearchParams(location.search).get("checkout");
+  if (checkout === "success") toast("お申し込みありがとうございます。反映まで少しお待ちください。");
+  if (checkout === "cancel") toast("お申し込みを取りやめました。");
+}
+
+async function render(shop) {
+  const { shops } = current;
+  const paid = isPaid(shop);
+  const { data: sub } = await sb.from("subscriptions").select("*").eq("shop_id", shop.id).maybeSingle();
+  root.innerHTML = `
+    ${shops.length > 1 ? `<section class="panel"><label>お店を切り替える<select id="shop-select">
+      ${shops.map((s) => `<option value="${s.id}" ${s.id === shop.id ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></label></section>` : ""}
+    <section class="panel">
+      <div class="spread">
+        <div><h1>${esc(shop.name)}</h1>
+          <p class="muted">${esc(ZONES[shop.zone])}${shop.town ? "・" + esc(shop.town) : ""}　${esc(shop.genre)}</p></div>
+        <span class="badge ${paid ? "paid" : ""}">${paid ? PLANS[shop.plan] : "無料プラン"}</span>
+      </div>
+      ${paid && shop.plan_until ? `<p class="muted small">次回の更新日：${fmtDate(shop.plan_until)}${sub && sub.status === "past_due" ? '　<span class="badge warn">お支払いが確認できていません</span>' : ""}</p>` : ""}
+      <p class="small"><a href="../#/shop/${encodeURIComponent(shop.slug)}" target="_blank" rel="noopener">公開ページを見る</a></p>
+    </section>
+    <div id="body"></div>`;
+  $("#shop-select")?.addEventListener("change", (e) => render(shops.find((s) => s.id === e.target.value)));
+  const body = $("#body");
+  if (paid) renderPaid(body, shop, sub);
+  else renderFree(body, shop);
+}
+
+// ───────── 無料プラン ─────────
+async function renderFree(body, shop) {
+  const { data: reqs } = await sb.from("update_requests").select("*").eq("shop_id", shop.id).order("created_at", { ascending: false }).limit(10);
+  body.innerHTML = `
+    <section class="panel">
+      <h2>掲載内容の更新依頼</h2>
+      <p class="muted">店名・ジャンル・Instagram などを直したいときは、ここから運営に依頼してください。確認して反映します。</p>
+      <form id="req-form">
+        <label>直したい内容<textarea name="body" rows="5" maxlength="2000" required placeholder="例：Instagram のアカウントが変わりました。新しいアカウントは @xxxx です。"></textarea></label>
+        <button class="btn" type="submit">依頼を送る</button>
+      </form>
+      ${reqs?.length ? `<h3>これまでの依頼</h3><ul class="list">${reqs.map((r) => `
+        <li><div class="spread"><span class="small">${fmtDate(r.created_at)}</span>
+          <span class="badge ${r.status === "done" ? "paid" : r.status === "rejected" ? "off" : ""}">${{ open: "確認中", done: "反映しました", rejected: "見送り" }[r.status]}</span></div>
+          <p style="white-space:pre-wrap;margin:6px 0 0">${esc(r.body)}</p>
+          ${r.admin_note ? `<p class="muted small">運営より：${esc(r.admin_note)}</p>` : ""}</li>`).join("")}</ul>` : ""}
+    </section>
+    ${upgradeSection(shop)}`;
+  $("#req-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const { error } = await sb.from("update_requests").insert({ shop_id: shop.id, user_id: current.session.user.id, body: e.target.body.value.trim() });
+    if (error) return toast("送れませんでした：" + error.message, "error");
+    toast("依頼を送りました。");
+    renderFree(body, shop);
+  });
+  bindUpgrade(shop);
+}
+
+function upgradeSection(shop) {
+  return `
+    <section class="panel" id="upgrade">
+      <h2>有料プランにする</h2>
+      <p class="muted">有料プランにすると、次のことができるようになります。</p>
+      <ul class="perks">${PERKS.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>
+      <div class="plans">
+        <div class="plan">
+          <span class="muted">月額プラン</span>
+          <span class="price">1,000円<small>／月（税込）</small></span>
+          <button class="btn" data-plan="monthly" type="button">月額で申し込む</button>
+        </div>
+        <div class="plan best">
+          <span class="muted">年額プラン　<span class="badge paid">2か月分お得</span></span>
+          <span class="price">10,000円<small>／年（税込）</small></span>
+          <button class="btn" data-plan="yearly" type="button">年額で申し込む</button>
+        </div>
+      </div>
+      <p class="muted small">お支払いはクレジットカード（Stripe）です。いつでも解約でき、解約後も期間の終わりまでは有料プランのままです。
+        <a href="../terms.html" target="_blank">利用規約</a>・<a href="../tokushoho.html" target="_blank">特定商取引法に基づく表記</a></p>
+      <p class="form-msg" id="upgrade-msg" role="status"></p>
+    </section>`;
+}
+
+function bindUpgrade(shop) {
+  document.querySelectorAll("[data-plan]").forEach((b) => b.addEventListener("click", async () => {
+    const msg = $("#upgrade-msg");
+    b.disabled = true; msg.textContent = "お支払い画面を準備しています…";
+    try {
+      const { url } = await callFn("create-checkout", { shop_id: shop.id, plan: b.dataset.plan, return_url: location.origin + location.pathname });
+      location.href = url;
+    } catch (err) {
+      msg.textContent = /not configured|準備中/.test(err.message) ? "お申し込みの受付は準備中です。もうしばらくお待ちください。" : "お支払い画面を開けませんでした：" + err.message;
+      b.disabled = false;
+    }
+  }));
+}
+
+// ───────── 有料プラン ─────────
+async function renderPaid(body, shop, sub) {
+  const [{ data: links }, { data: photos }] = await Promise.all([
+    sb.from("shop_links").select("*").eq("shop_id", shop.id).order("sort"),
+    sb.from("shop_photos").select("*").eq("shop_id", shop.id).order("sort"),
+  ]);
+  body.innerHTML = `
+    <section class="panel">
+      <h2>お店の情報</h2>
+      <form id="info-form">
+        <label>ひとこと（40字まで・一覧に出ます）<input name="catch" maxlength="40" value="${esc(shop.catch)}" placeholder="例：駅前で21時から朝まで。一人飲み歓迎" /></label>
+        <label>紹介文（400字まで）<textarea name="description" rows="6" maxlength="400">${esc(shop.description)}</textarea></label>
+        <label>営業時間<input name="hours" maxlength="100" value="${esc(shop.hours)}" placeholder="例：18:00〜24:00（L.O. 23:30）" /></label>
+        <label>定休日<input name="holiday" maxlength="100" value="${esc(shop.holiday)}" placeholder="例：日曜・祝日" /></label>
+        <label>Instagram（@ のあと）<input name="instagram" maxlength="30" pattern="[A-Za-z0-9_.]*" value="${esc(shop.instagram)}" /></label>
+        <button class="btn" type="submit">保存する</button>
+      </form>
+      <p class="muted small">店名・エリア・ジャンルを変えたいときは、運営にご連絡ください。</p>
+    </section>
+
+    <section class="panel">
+      <div class="spread"><h2>写真（${photos.length}/${MAX_PHOTOS}枚）</h2>
+        <label class="btn-ghost" ${photos.length >= MAX_PHOTOS ? "hidden" : ""}>写真を追加<input id="photo-input" type="file" accept="image/*" multiple hidden /></label></div>
+      <p class="muted small">1枚目がトップ写真になります。写真は自動で縮小され、撮影場所などの情報は消えます。</p>
+      <div class="photos" id="photos">${photos.map((p, i) => `
+        <div class="photo" data-id="${p.id}">
+          <img src="${esc(photoUrl(p.path))}" alt="${esc(p.caption)}" loading="lazy" />
+          <div class="tools">
+            ${p.is_hidden ? '<span class="badge off">運営により非表示</span>' : ""}
+            <input data-caption value="${esc(p.caption)}" maxlength="60" placeholder="説明（例：名物のおでん）" />
+            <div class="row">
+              <button class="icon-btn" data-move="-1" ${i === 0 ? "disabled" : ""} aria-label="前へ">←</button>
+              <button class="icon-btn" data-move="1" ${i === photos.length - 1 ? "disabled" : ""} aria-label="後ろへ">→</button>
+              <button class="icon-btn danger" data-del>削除</button>
+            </div>
+          </div>
+        </div>`).join("") || '<p class="muted">まだ写真がありません。</p>'}</div>
+      <p class="form-msg" id="photo-msg" role="status"></p>
+    </section>
+
+    <section class="panel">
+      <h2>リンク（${links.length}/${MAX_LINKS}件）</h2>
+      <ul class="list" id="links">${links.map((l, i) => `
+        <li data-id="${l.id}"><div class="spread">
+          <span><strong>${esc(l.label || LINK_KINDS[l.kind])}</strong><br><span class="small muted">${esc(l.url)}</span></span>
+          <span class="row">
+            <button class="icon-btn" data-lmove="-1" ${i === 0 ? "disabled" : ""} aria-label="上へ">↑</button>
+            <button class="icon-btn" data-lmove="1" ${i === links.length - 1 ? "disabled" : ""} aria-label="下へ">↓</button>
+            <button class="icon-btn danger" data-ldel>削除</button></span></div></li>`).join("")}</ul>
+      ${links.length < MAX_LINKS ? `<form id="link-form" class="row" style="margin-top:10px;align-items:flex-end">
+        <label>種類<select name="kind">${Object.entries(LINK_KINDS).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select></label>
+        <label style="flex:1;min-width:200px">URL<input name="url" type="url" required pattern="https://.*" placeholder="https://" /></label>
+        <label>表示名（任意）<input name="label" maxlength="20" /></label>
+        <button class="btn" type="submit">追加</button></form>` : ""}
+    </section>
+
+    <section class="panel">
+      <h2>ご契約</h2>
+      <p class="muted">${PLANS[shop.plan]}${shop.plan_until ? `・次回の更新日 ${fmtDate(shop.plan_until)}` : ""}</p>
+      ${sub ? '<button class="btn-ghost" id="portal" type="button">お支払い方法の変更・解約</button>' : '<p class="muted small">運営が設定した有料プランです。変更は運営にご連絡ください。</p>'}
+    </section>`;
+
+  const reload = async () => {
+    const { data } = await sb.from("shops").select("*").eq("id", shop.id).single();
+    Object.assign(shop, data); renderPaid(body, shop, sub);
+  };
+
+  $("#info-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const { error } = await sb.from("shops").update({
+      catch: f.catch.value.trim(), description: f.description.value.trim(), hours: f.hours.value.trim(),
+      holiday: f.holiday.value.trim(), instagram: f.instagram.value.trim().replace(/^@/, ""),
+    }).eq("id", shop.id);
+    error ? toast("保存できませんでした：" + error.message, "error") : (toast("保存しました。"), reload());
+  });
+
+  $("#photo-input")?.addEventListener("change", async (e) => {
+    const files = [...e.target.files].slice(0, MAX_PHOTOS - photos.length);
+    const msg = $("#photo-msg");
+    let sort = photos.length ? Math.max(...photos.map((p) => p.sort)) + 1 : 0;
+    for (const [i, file] of files.entries()) {
+      msg.textContent = `アップロードしています…（${i + 1}/${files.length}）`;
+      try {
+        const blob = await shrinkImage(file);
+        const ext = blob.type === "image/webp" ? "webp" : "jpg";
+        const path = `${shop.id}/${crypto.randomUUID()}.${ext}`;
+        const up = await sb.storage.from("photos").upload(path, blob, { contentType: blob.type, cacheControl: "31536000" });
+        if (up.error) throw up.error;
+        const ins = await sb.from("shop_photos").insert({ shop_id: shop.id, path, sort: sort++ });
+        if (ins.error) { await sb.storage.from("photos").remove([path]); throw ins.error; }
+      } catch (err) { toast("アップロードできませんでした：" + err.message, "error"); break; }
+    }
+    msg.textContent = "";
+    reload();
+  });
+
+  $("#photos").addEventListener("change", async (e) => {
+    if (!e.target.matches("[data-caption]")) return;
+    const id = e.target.closest(".photo").dataset.id;
+    const { error } = await sb.from("shop_photos").update({ caption: e.target.value.trim() }).eq("id", id);
+    error ? toast("保存できませんでした", "error") : toast("説明を保存しました。");
+  });
+  $("#photos").addEventListener("click", async (e) => {
+    const btn = e.target.closest("button"); if (!btn) return;
+    const id = btn.closest(".photo").dataset.id;
+    const idx = photos.findIndex((p) => p.id === id);
+    if ("del" in btn.dataset) {
+      if (!confirm("この写真を削除しますか？")) return;
+      await sb.from("shop_photos").delete().eq("id", id);
+      await sb.storage.from("photos").remove([photos[idx].path]);
+      return reload();
+    }
+    await swap("shop_photos", photos, idx, idx + Number(btn.dataset.move));
+    reload();
+  });
+
+  $("#link-form")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const sort = links.length ? Math.max(...links.map((l) => l.sort)) + 1 : 0;
+    const { error } = await sb.from("shop_links").insert({ shop_id: shop.id, kind: f.kind.value, url: f.url.value.trim(), label: f.label.value.trim(), sort });
+    error ? toast("追加できませんでした：" + error.message, "error") : reload();
+  });
+  $("#links").addEventListener("click", async (e) => {
+    const btn = e.target.closest("button"); if (!btn) return;
+    const id = btn.closest("li").dataset.id;
+    const idx = links.findIndex((l) => l.id === id);
+    if ("ldel" in btn.dataset) { await sb.from("shop_links").delete().eq("id", id); return reload(); }
+    await swap("shop_links", links, idx, idx + Number(btn.dataset.lmove));
+    reload();
+  });
+
+  $("#portal")?.addEventListener("click", async () => {
+    try { location.href = (await callFn("customer-portal", { shop_id: shop.id, return_url: location.href })).url; }
+    catch (err) { toast("開けませんでした：" + err.message, "error"); }
+  });
+}
+
+// 並び順を入れ替える（a と b の sort を交換）
+async function swap(table, items, a, b) {
+  if (b < 0 || b >= items.length) return;
+  const sa = items[a].sort === items[b].sort ? a : items[a].sort, sb_ = items[a].sort === items[b].sort ? b : items[b].sort;
+  await sb.from(table).update({ sort: sb_ }).eq("id", items[a].id);
+  await sb.from(table).update({ sort: sa }).eq("id", items[b].id);
+}

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ふくふく｜福井エキマエ — 福井駅前・片町のグルメと夜のお店</title>
+  <meta name="description" content="福井駅前と片町のグルメ、バー・スナック・ラウンジを探せる地元のお店ガイド。" />
+  <meta property="og:title" content="ふくふく｜福井エキマエ" />
+  <meta property="og:description" content="福井駅前と片町のグルメ、バー・スナック・ラウンジを探せる地元のお店ガイド。" />
+  <meta name="theme-color" content="#d9532b" />
+  <link rel="stylesheet" href="./styles.css?v=1" />
+</head>
+<body data-mode="day">
+  <header class="site-header">
+    <a class="brand" href="#/">
+      <span class="brand-mark" aria-hidden="true">ふ</span>
+      <span class="brand-text"><span class="brand-name">ふくふく</span><span class="brand-sub">福井エキマエ</span></span>
+    </a>
+    <a class="header-link" href="./owner/">お店の方へ</a>
+  </header>
+
+  <main id="app">
+    <section class="hero">
+      <div class="mode-switch" role="tablist" aria-label="昼と夜">
+        <button role="tab" data-mode="day" aria-selected="true"><span aria-hidden="true">☀</span> グルメ</button>
+        <button role="tab" data-mode="night" aria-selected="false"><span aria-hidden="true">☾</span> 夜のお店</button>
+      </div>
+      <p class="hero-lead" id="hero-lead">福井駅前と片町で、きょう行くお店を。</p>
+    </section>
+
+    <section class="filters" aria-label="絞り込み">
+      <div class="seg" id="zone-seg">
+        <button data-zone="" aria-pressed="true">すべて</button>
+        <button data-zone="ekimae" aria-pressed="false">駅前</button>
+        <button data-zone="katamachi" aria-pressed="false">片町</button>
+      </div>
+      <label class="search">
+        <span class="visually-hidden">店名で探す</span>
+        <input id="q" type="search" placeholder="店名・ジャンルで探す" autocomplete="off" />
+      </label>
+      <div class="chips" id="genre-chips"></div>
+    </section>
+
+    <p class="count" id="count" aria-live="polite"></p>
+    <ul class="cards" id="cards"></ul>
+    <button class="more" id="more" hidden>もっと見る</button>
+  </main>
+
+  <section id="detail" class="detail" hidden></section>
+
+  <section class="inquiry" id="inquiry">
+    <h2>掲載・情報の修正について</h2>
+    <p>お店の情報を直したい、掲載をやめたい、写真やリンクを載せたい、というお店の方はこちらからご連絡ください。運営から折り返します。</p>
+    <form id="inquiry-form">
+      <label>店名<input name="shop_name" required maxlength="100" /></label>
+      <label>ご連絡先（メールアドレスまたは電話番号）<input name="contact" required maxlength="200" /></label>
+      <label>ご用件<textarea name="message" rows="4" maxlength="2000"></textarea></label>
+      <button type="submit" class="btn">送信する</button>
+      <p class="form-msg" id="inquiry-msg" role="status"></p>
+    </form>
+  </section>
+
+  <footer class="site-footer">
+    <p class="age-note">20歳未満の飲酒は法律で禁止されています。お酒は楽しく適量で。飲酒運転は絶対にやめましょう。</p>
+    <p>「PR」と表示しているお店は、掲載料をいただいている有料掲載のお店です。</p>
+    <nav class="footer-nav">
+      <a href="./terms.html">利用規約</a>
+      <a href="./tokushoho.html">特定商取引法に基づく表記</a>
+      <a href="./privacy.html">プライバシーポリシー</a>
+      <a href="https://www.threads.net/@fukui_ekimae" target="_blank" rel="noopener">Threads @fukui_ekimae</a>
+    </nav>
+    <p class="copy">運営：ふくふく</p>
+  </footer>
+
+  <script src="./config.js?v=1"></script>
+  <script src="./app.js?v=1"></script>
+</body>
+</html>

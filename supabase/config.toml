@@ -1,0 +1,13 @@
+# Supabase CLI の設定（supabase functions deploy で使う）
+project_id = "fukui-ekimae"
+
+[functions.stripe-webhook]
+verify_jwt = false   # Stripe から直接呼ばれる。署名で確認する。
+
+[auth]
+site_url = "https://yasu29fr.github.io/fukui-ekimae/"
+additional_redirect_urls = ["https://yasu29fr.github.io/fukui-ekimae/owner/", "https://yasu29fr.github.io/fukui-ekimae/admin/"]
+enable_signup = false   # 自分で登録はできない。運営の招待だけ。
+
+[auth.email]
+enable_signup = false

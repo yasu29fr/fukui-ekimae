@@ -1,0 +1,44 @@
+name: 翌日ぶんの投稿を作る
+
+# 毎晩、翌日の 3 枠（11:30 ランチ / 17:30 PR か夕方 / 20:30 夜）をキューに足す。
+# 作った投稿は予約画面（docs/yoyaku/）で翌日の投稿時刻まで直せる。
+on:
+  repository_dispatch:
+    types: [threads-compose]
+  schedule:
+    - cron: "0 12 * * *"   # 21:00 JST
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "この日のぶんを作る（YYYY-MM-DD。空なら翌日）"
+        required: false
+
+concurrency:
+  group: threads-queue
+  cancel-in-progress: false
+
+jobs:
+  compose:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      PYTHONPATH: src
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 投稿を組み立てる
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          SITE_URL: ${{ vars.SITE_URL }}
+          TARGET_DATE: ${{ github.event.inputs.date }}
+        run: python scripts/compose.py ${TARGET_DATE:+--date "$TARGET_DATE"}
+      - name: キューの形式を検証する
+        run: python -m threads_bot validate
+      - name: コミットする
+        run: |
+          ./scripts/commit_file.sh state/featured.json "chore: 紹介済みの記録を更新" || true
+          ./scripts/commit_file.sh posts/queue.jsonl "chore(queue): 翌日ぶんを追加"
