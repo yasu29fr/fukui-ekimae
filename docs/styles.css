@@ -15,13 +15,14 @@
 }
 body[data-mode="night"] {
   /* 夜：相生ユニビオの「落ち着いた紫 × アイボリー × 金色」を参考に。背景は明るいまま、上品な夜の雰囲気に */
-  --bg: #f2f2ea; --surface: #fffefa; --ink: #33283f; --muted: #776d80; --line: #d9d0bf;
+  --bg: #f2f2ea; --surface: #fffefa; --ink: #33283f; --muted: #6c6276; --line: #d9d0bf;
   --hd: #62448c; --hd-deep: #4b3370; --hd-ink: #ffffff;
   --main: #62448c; --main-soft: #ece6f3; --accent: #dea426; --accent-soft: #faf0d9;
-  --stamp: #c8901a; --pr: #8a6410; --pr-soft: #f8edd2; --band: #dea426;
+  --stamp: #a87612; --pr: #8a6410; --pr-soft: #f8edd2; --band: #dea426;
   --shadow: 0 1px 2px rgba(60, 40, 90, .06), 0 8px 22px rgba(60, 40, 90, .08);
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
 body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.65;
   font-family: var(--f-body); font-weight: 500; letter-spacing: .02em;
@@ -165,7 +166,18 @@ body[data-mode="night"] .band { color: #3a2c05; }
 .more { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 420px; margin: 24px auto 8px; padding: 12px 18px; border-radius: 14px;
   border: 1.5px dashed var(--line); background: var(--surface); color: var(--muted); font-weight: 800; font-size: .9rem; cursor: pointer; }
 .more:hover { border-color: var(--main); color: var(--main); }
-.empty { color: var(--muted); padding: 28px 0; text-align: center; grid-column: 1 / -1; }
+.empty { color: var(--muted); padding: 32px 16px; text-align: center; grid-column: 1 / -1; background: var(--surface); border: 1.5px dashed var(--line); border-radius: var(--radius); }
+.empty b { display: block; color: var(--ink); font-family: var(--f-head); font-size: 1rem; margin-bottom: 4px; }
+.empty p { margin: 0 0 14px; font-size: .86rem; }
+.empty-acts { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.empty-acts button { border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 7px 16px; font-size: .84rem; font-weight: 700; cursor: pointer; }
+.empty-acts button.go { background: var(--btn); border-color: var(--btn); color: #fff; }
+body[data-mode="day"] .empty-acts button { border-radius: 6px; }
+/* 読み込み中の仮のカード */
+.skel { height: 132px; border-radius: var(--radius); background: linear-gradient(100deg, var(--surface) 30%, var(--main-soft) 50%, var(--surface) 70%) 0 0 / 300% 100%;
+  box-shadow: var(--shadow); animation: skel 1.4s ease-in-out infinite; }
+@keyframes skel { from { background-position: 100% 0; } to { background-position: 0 0; } }
+@media (prefers-reduced-motion: reduce) { .skel { animation: none; } }
 
 /* ── 店の詳細 ── */
 .detail { padding-top: 14px; padding-bottom: 28px; }
@@ -339,3 +351,6 @@ button svg, button use, a svg, a use, .ic, .stamp, .mood-ic { pointer-events: no
 .mode-tabs button[data-mode="day"][aria-pressed="false"] { color: #0b0b0d; }
 @media (min-width: 900px) { .mode-tabs { display: none; } }
 .mode-tabs + .page-head { padding-top: 14px; }
+
+/* 夜の金色は線や面だけに使い、文字は濃い金か墨色にして読みやすく（コントラスト 4.5:1 以上） */
+body[data-mode="night"] .ticket.is-pr .t-tags .kind { color: var(--pr); }

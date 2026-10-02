@@ -61,10 +61,11 @@
     if (hasDb) {
       const url = `${cfg.supabaseUrl}/rest/v1/public_shops?select=*`;
       const res = await fetch(url, { headers: { apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}` } });
-      if (!res.ok) throw new Error(`データを読み込めませんでした（${res.status}）`);
+      if (!res.ok) throw new Error(`エラー ${res.status}`);
       return res.json();
     }
     const res = await fetch("./data/shops.json");
+    if (!res.ok) throw new Error(`エラー ${res.status}`);
     return res.json();
   }
 
@@ -77,14 +78,18 @@
       (Boolean(b.instagram) - Boolean(a.instagram)) || a.name.localeCompare(b.name, "ja"));
   }
 
-  function filtered() {
+  function matchQ(s) {
     const q = state.q.trim().toLowerCase();
+    return !q || `${s.name} ${s.genre} ${s.town}`.toLowerCase().includes(q);
+  }
+
+  function filtered() {
     return state.shops.filter((s) =>
       (state.mode === "night" ? s.category === "night" : s.category === "gourmet") &&
       (!state.zone || s.zone === state.zone) &&
       (!state.genre || s.genre === state.genre) &&
       (!currentMood()?.genres || currentMood().genres.includes(s.genre)) &&
-      (!q || `${s.name} ${s.genre} ${s.town}`.toLowerCase().includes(q)));
+      matchQ(s));
   }
 
   function renderChips() {
@@ -167,17 +172,39 @@
     $("#count").textContent = all.length;
     $("#pickup").hidden = !picks.length;
     $("#pick-cards").innerHTML = picks.map(card).join("");
+    $("#cards").removeAttribute("aria-busy");
     $("#cards").innerHTML = list.length
       ? list.slice(0, state.shown).map(card).join("")
-      : (picks.length ? "" : '<li class="empty">条件に合うお店が見つかりませんでした。</li>');
+      : (picks.length ? "" : emptyState(night));
     $("#more").hidden = list.length <= state.shown;
     $("#more").textContent = `もっと見る（あと${Math.max(0, list.length - state.shown)}件）`;
+  }
+
+  // 条件に合うお店がないとき：条件をゆるめるボタンと、もう一方（グルメ／夜）に合うお店があればその案内
+  function emptyState(night) {
+    const other = night ? "day" : "night";
+    const otherHits = state.q ? state.shops.filter((s) => s.category === (night ? "gourmet" : "night") && matchQ(s)).length : 0;
+    const acts = [
+      state.q || state.genre || state.zone || state.mood ? '<button type="button" class="go" data-reset>条件をすべて外す</button>' : "",
+      otherHits ? `<button type="button" data-mode="${other}">${night ? "グルメ" : "夜のお店"}で「${esc(state.q)}」を見る（${otherHits}件）</button>` : "",
+    ].join("");
+    return `<li class="empty"><b>条件に合うお店が見つかりませんでした</b>
+      <p>${state.q ? `「${esc(state.q)}」の書き方を変えるか、` : ""}エリアやジャンルを変えてみてください。</p>
+      ${acts ? `<div class="empty-acts">${acts}</div>` : ""}</li>`;
   }
 
   function renderDetail(slug) {
     const s = state.shops.find((x) => x.slug === slug);
     const el = $("#detail");
-    if (!s) { location.hash = "#/"; return; }
+    if (!s) {
+      // 掲載をやめたお店や、URL の打ち間違い
+      $("#app").hidden = true; el.hidden = false;
+      el.innerHTML = `<button class="back" type="button" data-back>${svg("back")}一覧にもどる</button>
+        <ul class="cards"><li class="empty"><b>このお店のページは見つかりませんでした</b>
+        <p>掲載が終わったか、URL が変わった可能性があります。</p>
+        <div class="empty-acts"><button type="button" class="go" data-reset>お店の一覧を見る</button></div></li></ul>`;
+      return;
+    }
     const night = s.category === "night";
     document.body.dataset.mode = night ? "night" : "day";
     setIcons(night);
@@ -276,6 +303,11 @@
     }
     else if ("zone" in t.dataset && t.closest("#zone-seg")) { state.zone = t.dataset.zone; state.shown = PAGE; remember(); renderList(); }
     else if ("genre" in t.dataset) { state.genre = t.dataset.genre; state.shown = PAGE; renderList(); }
+    else if ("reset" in t.dataset) {
+      state.q = ""; state.genre = ""; state.zone = ""; state.mood = ""; state.shown = PAGE; remember();
+      for (const id of ["#q", "#q-m"]) $(id).value = "";
+      if (location.hash.startsWith("#/shop/")) location.hash = "#/"; else renderList();
+    }
     else if (t.id === "more") { state.shown += PAGE; renderList(); }
     else if (t.dataset.slide) { const sl = $("#d-slides"); sl.scrollTo({ left: sl.clientWidth * Number(t.dataset.slide), behavior: "smooth" }); }
     else if ("back" in t.dataset) { history.length > 1 ? history.back() : (location.hash = "#/"); }
@@ -326,5 +358,9 @@
 
   Promise.all([load(), loadDemo()])
     .then(([rows, extra]) => { state.shops = sortShops(extra.concat(rows)); route(); })
-    .catch((err) => { $("#lead").textContent = err.message; });
+    .catch((err) => {
+      $("#cards").removeAttribute("aria-busy");
+      $("#cards").innerHTML = `<li class="empty"><b>お店の情報を読み込めませんでした</b><p>通信の状態を確かめて、もう一度お試しください。${/^エラー \d+$/.test(err.message) ? `<br><small>（${esc(err.message)}）</small>` : ""}</p>
+        <div class="empty-acts"><button type="button" class="go" onclick="location.reload()">もう一度読み込む</button></div></li>`;
+    });
 })();

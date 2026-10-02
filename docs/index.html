@@ -31,7 +31,7 @@
   </script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yakuhanjp@4.1.1/dist/css/yakuhanjp.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" />
-  <link rel="stylesheet" href="./styles.css?v=27" />
+  <link rel="stylesheet" href="./styles.css?v=28" />
 </head>
 <body data-mode="day">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -78,7 +78,7 @@
       <div class="ph-row">
         <span class="ph-icon" aria-hidden="true"><svg class="i"><use id="ph-icon" href="#i-bowl"/></svg></span>
         <h1 id="ph-title">グルメ</h1>
-        <span class="ph-count"><b id="count">0</b>件</span>
+        <span class="ph-count"><b id="count">–</b>件</span>
       </div>
     </section>
 
@@ -108,7 +108,7 @@
     </section>
 
     <h2 class="sec"><span class="en">SHOPS</span><span id="sec-title">お店</span></h2>
-    <ul class="cards" id="cards"></ul>
+    <ul class="cards" id="cards" aria-busy="true"><li class="skel" aria-hidden="true"></li><li class="skel" aria-hidden="true"></li><li class="skel" aria-hidden="true"></li><li class="skel" aria-hidden="true"></li><li class="skel" aria-hidden="true"></li><li class="skel" aria-hidden="true"></li><li class="visually-hidden">読み込み中…</li></ul>
     <button class="more" id="more" hidden>もっと見る</button>
   </main>
 
@@ -150,6 +150,6 @@
   </nav>
 
   <script src="./config.js?v=1"></script>
-  <script src="./app.js?v=19"></script>
+  <script src="./app.js?v=20"></script>
 </body>
 </html>
