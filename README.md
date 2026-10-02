@@ -62,7 +62,7 @@
    メールの文面（Invite user / Magic link）は日本語に書き換える。例：件名「ふくふく｜福井エキマエ お店の管理画面へのご招待」。
 6. Project Settings → API の **Project URL** と **anon public キー**を `docs/config.js` に書く（anon キーは公開してよい。service_role キーは書かない）。
 
-### 2. Edge Functions（招待・Stripe）
+### 2. Edge Functions（招待・Stripe・運営へのメール通知）
 
 [Supabase CLI](https://supabase.com/docs/guides/cli) で：
 
@@ -82,6 +82,23 @@ supabase secrets set STRIPE_SECRET_KEY=sk_live_... \
 ```
 
 Stripe のキーを入れるまでは、管理画面の申し込みボタンは「準備中」と表示される。
+
+**お問い合わせ・更新依頼のメール通知**（届いたら運営にメールが来る）：
+
+```bash
+supabase functions deploy notify-admin --no-verify-jwt
+supabase secrets set RESEND_API_KEY=re_... NOTIFY_TO=yasu29fr@gmail.com \
+  NOTIFY_FROM="ふくふく <info@送信に使うドメイン>" NOTIFY_WEBHOOK_SECRET=<長いランダムな文字列>
+```
+
+1. [Resend](https://resend.com) の API キーを使う（Auth の SMTP を Resend にしているなら同じキーでよい）。
+   送信元のドメインを Resend で認証するまでは、`NOTIFY_FROM` を省くと `onboarding@resend.dev` から、
+   Resend に登録したメールアドレス宛てにだけ送れる。
+2. Supabase の Database → Webhooks で、次の 2 つを作る（どちらも同じ設定）。
+   - 表：`inquiries`（お問い合わせ）と `update_requests`（更新依頼）、イベント：Insert
+   - 種類：Supabase Edge Functions → `notify-admin`、メソッド：POST
+   - HTTP Headers に `x-webhook-secret: <NOTIFY_WEBHOOK_SECRET と同じ文字列>` を追加
+3. サイトのお問い合わせフォームから送ってみて、メールが届くか確かめる。
 
 ### 3. Stripe
 
@@ -137,7 +154,7 @@ python scripts/build_seed.py ../fukui-ekimae-data/list/対象店舗.csv
 
 ```bash
 PYTHONPATH=src python -m unittest discover -s tests          # 投稿の仕組み・毎晩の投稿づくり
-deno test --allow-env --allow-net supabase/functions/stripe-webhook/test.ts   # Stripe 通知
+deno test --allow-env --allow-net supabase/functions/stripe-webhook/test.ts supabase/functions/notify-admin/test.ts   # Stripe 通知・メール通知
 # 権限（RLS）：素の PostgreSQL に stub → migration → テストの順に流す
 psql -f supabase/tests/stub_supabase.sql -f supabase/migrations/0001_init.sql -f supabase/tests/rls_test.sql
 ```
@@ -158,7 +175,7 @@ docs/                    公開サイト（GitHub Pages）
 supabase/
   migrations/0001_init.sql   テーブル・権限（RLS）・写真の保存先
   seed/shops_public.sql      店の初期データ（公開項目）
-  functions/                 invite-owner / create-checkout / customer-portal / stripe-webhook
+  functions/                 invite-owner / create-checkout / customer-portal / stripe-webhook / notify-admin
   tests/                     権限のテスト
 scripts/
   build_seed.py          調査リスト → 初期データ

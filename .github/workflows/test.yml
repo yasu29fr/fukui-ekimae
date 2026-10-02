@@ -55,9 +55,9 @@ jobs:
       - name: 型チェック
         working-directory: supabase/functions
         run: deno check */index.ts
-      - name: Stripe 通知のテスト
+      - name: Stripe 通知・運営へのメール通知のテスト
         working-directory: supabase/functions
         env:
           SUPABASE_URL: http://localhost
           SUPABASE_SERVICE_ROLE_KEY: dummy
-        run: deno test --allow-env --allow-net stripe-webhook/test.ts
+        run: deno test --allow-env --allow-net stripe-webhook/test.ts notify-admin/test.ts
