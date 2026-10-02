@@ -1,0 +1,38 @@
+[
+  {
+    "slug": "demo-soba", "name": "そば処 ふくふく庵（見本）", "zone": "ekimae", "town": "中央", "category": "gourmet", "genre": "そば・うどん",
+    "instagram": "", "is_paid": true, "is_demo": true,
+    "catch": "駅から3分、昼は打ちたてのおろしそば",
+    "description": "毎朝、福井県産のそば粉で手打ちしています。名物は大根おろしをたっぷりのせた越前おろしそば。夜は地酒と季節の一品料理でゆっくりどうぞ。\n※これは掲載イメージの見本です。実在のお店ではありません。",
+    "hours": "11:00〜14:30 ／ 17:30〜21:00（L.O. 20:30）", "holiday": "水曜",
+    "links": [{"kind": "web", "label": "ホームページ", "url": "https://example.com/"}, {"kind": "tabelog", "label": "食べログ", "url": "https://example.com/"}, {"kind": "reserve", "label": "予約する", "url": "https://example.com/"}],
+    "photos": [{"url": "./demo/soba-1.svg", "caption": "手打ちのおろしそば"}, {"url": "./demo/soba-3.svg", "caption": "のれんの外観"}, {"url": "./demo/soba-2.svg", "caption": "カウンター席"}]
+  },
+  {
+    "slug": "demo-cafe", "name": "喫茶 ことり（見本）", "zone": "ekimae", "town": "大手", "category": "gourmet", "genre": "カフェ・スイーツ",
+    "instagram": "", "is_paid": true, "is_demo": true,
+    "catch": "窓ぎわでのんびり。季節のタルトと自家焙煎珈琲",
+    "description": "お城のお堀が見える小さな喫茶店です。自家焙煎の珈琲と、福井の果物を使った季節のタルトをご用意しています。お一人さまも大歓迎です。\n※これは掲載イメージの見本です。実在のお店ではありません。",
+    "hours": "9:00〜18:00", "holiday": "月曜・第3火曜",
+    "links": [{"kind": "web", "label": "ホームページ", "url": "https://example.com/"}, {"kind": "gmap", "label": "Googleマップ", "url": "https://example.com/"}],
+    "photos": [{"url": "./demo/cafe-1.svg", "caption": "季節のタルト"}, {"url": "./demo/cafe-2.svg", "caption": "ハンドドリップ"}, {"url": "./demo/cafe-3.svg", "caption": "窓ぎわの席"}, {"url": "./demo/cafe-4.svg", "caption": "焼きたてのパン"}]
+  },
+  {
+    "slug": "demo-bar", "name": "BAR ほしあかり（見本）", "zone": "katamachi", "town": "順化", "category": "night", "genre": "バー",
+    "instagram": "", "is_paid": true, "is_demo": true,
+    "catch": "一枚板のカウンターで、フルーツカクテルを",
+    "description": "片町の路地裏にあるオーセンティックバーです。福井の旬のフルーツを使ったカクテルと、ウイスキー200種をご用意。一軒目にも、締めの一杯にもどうぞ。\n※これは掲載イメージの見本です。実在のお店ではありません。",
+    "hours": "20:00〜翌3:00", "holiday": "日曜",
+    "links": [{"kind": "x", "label": "X", "url": "https://example.com/"}, {"kind": "line", "label": "LINE公式", "url": "https://example.com/"}],
+    "photos": [{"url": "./demo/bar-1.svg", "caption": "季節のフルーツカクテル"}, {"url": "./demo/bar-3.svg", "caption": "一枚板のカウンター"}, {"url": "./demo/bar-2.svg", "caption": "ウイスキー200種"}]
+  },
+  {
+    "slug": "demo-snack", "name": "スナック ゆうなぎ（見本）", "zone": "katamachi", "town": "順化", "category": "night", "genre": "スナック・ラウンジ",
+    "instagram": "", "is_paid": true, "is_demo": true,
+    "catch": "はじめての方も気軽に。ママと歌って笑って",
+    "description": "片町で20年。初めての方、お一人さまも大歓迎です。90分飲み放題・カラオケ歌い放題のセットもあります。気軽にのぞいてみてください。\n※これは掲載イメージの見本です。実在のお店ではありません。",
+    "hours": "20:00〜翌1:00", "holiday": "日曜・祝日",
+    "links": [{"kind": "line", "label": "LINE公式", "url": "https://example.com/"}, {"kind": "threads", "label": "Threads", "url": "https://example.com/"}],
+    "photos": [{"url": "./demo/snack-1.svg", "caption": "最新のカラオケ"}, {"url": "./demo/snack-3.svg", "caption": "あたたかい店内"}, {"url": "./demo/snack-2.svg", "caption": "ボトルキープ"}]
+  }
+]

@@ -45,7 +45,10 @@
   } catch (_) { /* 保存できない環境では毎回初期値 */ }
   const remember = () => { try { localStorage.setItem("fukufuku", JSON.stringify({ mode: state.mode, zone: state.zone })); } catch (_) {} };
 
-  function photoUrl(path) {
+  // 見本（?demo=1）の写真は url を持つ。本番の写真は Supabase のパス。
+  function photoUrl(p) {
+    if (typeof p === "object") return p.url || photoUrl(p.path);
+    const path = p;
     return `${cfg.supabaseUrl}/storage/v1/object/public/photos/${path.split("/").map(encodeURIComponent).join("/")}`;
   }
   function mapUrl(s) {
@@ -114,7 +117,7 @@
     const top = s.is_paid && s.photos && s.photos[0];
     return `<li class="ticket${s.is_paid ? " is-pr" : ""}">
       <a class="t-link" href="#/shop/${encodeURIComponent(s.slug)}">
-        ${top ? `<div class="t-photo" style="background-image:url('${esc(photoUrl(top.path))}')" role="img" aria-label="${esc(top.caption || s.name)}"><span class="pr-tag">PR</span></div>` : ""}
+        ${top ? `<div class="t-photo" style="background-image:url('${esc(photoUrl(top))}')" role="img" aria-label="${esc(top.caption || s.name)}"><span class="pr-tag">PR</span></div>` : ""}
         <div class="t-main">
           ${stamp(s)}
           <div class="t-text">
@@ -134,7 +137,7 @@
     document.body.dataset.mode = state.mode;
     document.querySelectorAll("[data-mode]").forEach((b) => b.tagName === "BUTTON" && b.setAttribute("aria-pressed", String(b.dataset.mode === state.mode)));
     document.querySelectorAll("#zone-seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.zone === state.zone)));
-    document.querySelector('meta[name="theme-color"]').content = night ? "#62448c" : "#e2602a";
+    document.querySelector('meta[name="theme-color"]').content = night ? "#62448c" : "#33261d";
     $("#ph-band").textContent = night ? "NIGHT" : "GOURMET";
     const now = new Date(), season = ["WINTER", "WINTER", "SPRING", "SPRING", "SPRING", "SUMMER", "SUMMER", "SUMMER", "AUTUMN", "AUTUMN", "AUTUMN", "WINTER"][now.getMonth()];
     $("#season").textContent = `${now.getFullYear()} ${season}`;
@@ -148,11 +151,15 @@
       <span class="mood-ic" aria-hidden="true">${m.icon}</span><span class="mood-t"><b>${esc(m.label)}</b><small>${esc(m.sub)}</small></span></button>`).join("");
     const mood = currentMood();
     if (mood) $("#sec-title").textContent = mood.zone ? `「${mood.label}」のお店` : `${state.zone ? ZONES[state.zone] : "駅前・片町"}で「${mood.label}」`;
-    const list = filtered();
-    $("#count").textContent = list.length;
+    const all = filtered();
+    // 有料（PR）のお店は「PICK UP」に写真つきで出し、下の一覧には無料のお店を並べる
+    const picks = all.filter((s) => s.is_paid), list = all.filter((s) => !s.is_paid);
+    $("#count").textContent = all.length;
+    $("#pickup").hidden = !picks.length;
+    $("#pick-cards").innerHTML = picks.map(card).join("");
     $("#cards").innerHTML = list.length
       ? list.slice(0, state.shown).map(card).join("")
-      : '<li class="empty">条件に合うお店が見つかりませんでした。</li>';
+      : (picks.length ? "" : '<li class="empty">条件に合うお店が見つかりませんでした。</li>');
     $("#more").hidden = list.length <= state.shown;
     $("#more").textContent = `もっと見る（あと${Math.max(0, list.length - state.shown)}件）`;
   }
@@ -166,7 +173,7 @@
     el.innerHTML = `
       <button class="back" type="button" data-back>${svg("back")}一覧にもどる</button>
       <article class="ticket d-ticket${s.is_paid ? " is-pr" : ""}">
-        ${photos.length ? `<div class="gallery">${photos.map((p) => `<figure><img src="${esc(photoUrl(p.path))}" alt="${esc(p.caption || s.name)}" loading="lazy" />${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}</figure>`).join("")}</div>` : ""}
+        ${photos.length ? `<div class="gallery">${photos.map((p) => `<figure><img src="${esc(photoUrl(p))}" alt="${esc(p.caption || s.name)}" loading="lazy" />${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}</figure>`).join("")}</div>` : ""}
         <div class="t-main">
           ${stamp(s)}
           <div class="t-text">
@@ -247,7 +254,17 @@
     } finally { btn.disabled = false; }
   });
 
-  load()
-    .then((rows) => { state.shops = sortShops(rows); route(); })
+  // ?demo=1 のときだけ、有料掲載の見本（架空の店）を混ぜて表示する。本番の一覧には出さない。
+  const demo = new URLSearchParams(location.search).has("demo");
+  const loadDemo = () => (demo ? fetch("./demo/shops.json").then((r) => r.json()) : Promise.resolve([]));
+  if (demo) {
+    const bar = document.createElement("div");
+    bar.className = "demo-bar";
+    bar.innerHTML = "有料掲載の<b>見本</b>を表示しています（架空のお店です）";
+    document.body.prepend(bar);
+  }
+
+  Promise.all([load(), loadDemo()])
+    .then(([rows, extra]) => { state.shops = sortShops(extra.concat(rows)); route(); })
     .catch((err) => { $("#lead").textContent = err.message; });
 })();

@@ -2,13 +2,12 @@
    おでかけ帖の骨組み（色付きヘッダー・チケット型カード・下のタブバー）をもとに、
    昼は「のれん」、夜は「夕暮れの路地」の配色。夜も背景は明るめにして暗くしすぎない。 */
 :root {
-  /* 昼：朱色寄りのオレンジ × 焦げ茶の文字 × 白に近い生成り
-     （ごとうじゅうランドセルの温かみと、Mountain Gourmet Lab の明るく鮮やかな配色を参考に） */
-  --bg: #faf6f0; --surface: #ffffff; --ink: #4a3620; --muted: #8a7a63; --line: #ebe2d6;
-  --hd: #e2602a; --hd-deep: #b8481a; --hd-ink: #ffffff;
-  --main: #d9561f; --main-soft: #fde9de; --accent: #e87200; --accent-soft: #fff1e0;
-  --stamp: #d9561f; --pr: #a8741c; --pr-soft: #fdf3dc; --band: #e87200;
-  --shadow: 0 1px 2px rgba(96, 69, 27, .05), 0 8px 22px rgba(96, 69, 27, .07);
+  /* 昼（グルメ）：焦げ茶〜黒に近い、落ち着いた上品な配色。差し色は真鍮のような金茶 */
+  --bg: #f5f1ea; --surface: #fffdf9; --ink: #2e241d; --muted: #7d6f62; --line: #e3d9cc;
+  --hd: #33261d; --hd-deep: #1f1610; --hd-ink: #ffffff;
+  --main: #5c4030; --main-soft: #efe6dc; --accent: #a8875a; --accent-soft: #f4ecdf;
+  --stamp: #8a5a3a; --pr: #8a6a32; --pr-soft: #f6eedc; --band: #33261d;
+  --shadow: 0 1px 2px rgba(50, 35, 25, .05), 0 8px 22px rgba(50, 35, 25, .07);
   --tabbar: 64px; --radius: 18px;
   --f-body: "Zen Kaku Gothic New", "Hiragino Sans", system-ui, sans-serif;
   --f-head: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", var(--f-body);
@@ -204,3 +203,12 @@ form input:focus, form textarea:focus { outline: 2px solid var(--main-soft); bor
 .age-note { font-weight: 800; color: var(--ink); }
 .footer-nav { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 10px 0; }
 .copy { margin: 0; }
+
+/* 見本表示（?demo=1）の帯 */
+.demo-bar { background: repeating-linear-gradient(-45deg, #fff4c2 0 12px, #ffeaa0 12px 24px); color: #5a4300; text-align: center; font-size: .78rem; font-weight: 700; padding: 6px 12px; }
+
+/* PICK UP（有料のお店）：写真を大きく。PC では横に2〜3枚 */
+#pickup .sec .pr-tag { margin-left: 4px; }
+.cards.pick { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); margin-bottom: 8px; }
+.cards.pick .t-photo { aspect-ratio: 3 / 2; }
+.cards.pick .t-note { color: var(--ink); }
