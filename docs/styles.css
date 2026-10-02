@@ -15,13 +15,12 @@
   --f-en: "Jost", var(--f-body);
 }
 body[data-mode="night"] {
-  /* 夜：鮮やかな青緑 × 山吹色。背景は白に近い薄い青緑で、暗くしすぎない
-     （Mountain Gourmet Lab の青緑、芽吹き屋の山吹色を参考に） */
-  --bg: #f1f7f6; --surface: #ffffff; --ink: #183a37; --muted: #5a7672; --line: #d6e6e3;
-  --hd: #108474; --hd-deep: #0b6357; --hd-ink: #ffffff;
-  --main: #0f7a6b; --main-soft: #dcf0ec; --accent: #f8c53b; --accent-soft: #fff6d9;
-  --stamp: #e0a40f; --pr: #93650a; --pr-soft: #fdf3d2; --band: #f8c53b;
-  --shadow: 0 1px 2px rgba(10, 60, 55, .06), 0 8px 22px rgba(10, 60, 55, .08);
+  /* 夜：相生ユニビオの「落ち着いた紫 × アイボリー × 金色」を参考に。背景は明るいまま、上品な夜の雰囲気に */
+  --bg: #f2f2ea; --surface: #fffefa; --ink: #33283f; --muted: #776d80; --line: #d9d0bf;
+  --hd: #62448c; --hd-deep: #4b3370; --hd-ink: #ffffff;
+  --main: #62448c; --main-soft: #ece6f3; --accent: #dea426; --accent-soft: #faf0d9;
+  --stamp: #c8901a; --pr: #8a6410; --pr-soft: #f8edd2; --band: #dea426;
+  --shadow: 0 1px 2px rgba(60, 40, 90, .06), 0 8px 22px rgba(60, 40, 90, .08);
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }

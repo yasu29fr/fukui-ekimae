@@ -134,7 +134,7 @@
     document.body.dataset.mode = state.mode;
     document.querySelectorAll("[data-mode]").forEach((b) => b.tagName === "BUTTON" && b.setAttribute("aria-pressed", String(b.dataset.mode === state.mode)));
     document.querySelectorAll("#zone-seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.zone === state.zone)));
-    document.querySelector('meta[name="theme-color"]').content = night ? "#108474" : "#e2602a";
+    document.querySelector('meta[name="theme-color"]').content = night ? "#62448c" : "#e2602a";
     $("#ph-band").textContent = night ? "NIGHT" : "GOURMET";
     const now = new Date(), season = ["WINTER", "WINTER", "SPRING", "SPRING", "SPRING", "SUMMER", "SUMMER", "SUMMER", "AUTUMN", "AUTUMN", "AUTUMN", "WINTER"][now.getMonth()];
     $("#season").textContent = `${now.getFullYear()} ${season}`;
