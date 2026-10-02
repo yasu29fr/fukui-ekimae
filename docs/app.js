@@ -256,7 +256,8 @@
   }
 
   document.addEventListener("click", (e) => {
-    const t = e.target.closest("button");
+    const el = e.target instanceof Element ? e.target : e.target.correspondingUseElement || e.target.parentNode;
+    const t = el && el.closest ? el.closest("button") : null;
     if (!t) return;
     if (t.dataset.mode) {
       state.mode = t.dataset.mode; state.genre = ""; state.mood = ""; state.shown = PAGE; remember();
