@@ -2,66 +2,97 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>ふくふく｜福井エキマエ — 福井駅前・片町のグルメと夜のお店</title>
   <meta name="description" content="福井駅前と片町のグルメ、バー・スナック・ラウンジを探せる地元のお店ガイド。" />
   <meta property="og:title" content="ふくふく｜福井エキマエ" />
   <meta property="og:description" content="福井駅前と片町のグルメ、バー・スナック・ラウンジを探せる地元のお店ガイド。" />
-  <meta name="theme-color" content="#d9532b" />
-  <link rel="stylesheet" href="./styles.css?v=1" />
+  <meta name="theme-color" content="#c8553d" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" />
+  <link rel="stylesheet" href="./styles.css?v=3" />
 </head>
 <body data-mode="day">
-  <header class="site-header">
-    <a class="brand" href="#/">
-      <span class="brand-mark" aria-hidden="true">ふ</span>
-      <span class="brand-text"><span class="brand-name">ふくふく</span><span class="brand-sub">福井エキマエ</span></span>
-    </a>
-    <a class="header-link" href="./owner/">お店の方へ</a>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-bowl" viewBox="0 0 24 24"><path d="M3 11h18a9 9 0 0 1-18 0Z"/><path d="M8 7c0-1.5 1-2 1-3.5M12 7c0-1.5 1-2 1-3.5M16 7c0-1.5 1-2 1-3.5"/></symbol>
+    <symbol id="i-glass" viewBox="0 0 24 24"><path d="M5 4h14l-7 8Z"/><path d="M12 12v8M8 20h8"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+    <symbol id="i-store" viewBox="0 0 24 24"><path d="M4 9.5 5.5 4h13L20 9.5"/><path d="M4 9.5a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0 2.7 2.7 0 0 0 5.3 0"/><path d="M5.5 12v8h13v-8M10 20v-5h4v5"/></symbol>
+    <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><path d="m9 4-5 2v14l5-2 6 2 5-2V4l-5 2Z"/><path d="M9 4v14M15 6v14"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  </svg>
+
+  <header class="hd">
+    <div class="hd-in">
+      <a class="logo" href="#/">
+        <span class="emblem" aria-hidden="true">ふ</span>
+        <span class="logo-t"><small>FUKUI EKIMAE</small><b>ふくふく</b></span>
+      </a>
+      <nav class="hd-nav" aria-label="切り替え">
+        <button data-mode="day" aria-pressed="true"><svg class="i"><use href="#i-bowl"/></svg><span>グルメ</span></button>
+        <button data-mode="night" aria-pressed="false"><svg class="i"><use href="#i-glass"/></svg><span>夜のお店</span></button>
+      </nav>
+      <label class="hd-search">
+        <svg class="i"><use href="#i-search"/></svg>
+        <span class="visually-hidden">店名・ジャンルで探す</span>
+        <input id="q" type="search" placeholder="店名・ジャンルで探す" autocomplete="off" />
+      </label>
+      <a class="hd-btn" href="./owner/"><svg class="i"><use href="#i-store"/></svg><span class="t">お店の方へ</span></a>
+    </div>
   </header>
 
-  <main id="app">
-    <section class="hero">
-      <div class="mode-switch" role="tablist" aria-label="昼と夜">
-        <button role="tab" data-mode="day" aria-selected="true"><span aria-hidden="true">☀</span> グルメ</button>
-        <button role="tab" data-mode="night" aria-selected="false"><span aria-hidden="true">☾</span> 夜のお店</button>
+  <main id="app" class="wrap">
+    <section class="page-head">
+      <p class="lead" id="lead"></p>
+      <div class="ph-row">
+        <span class="ph-icon" aria-hidden="true"><svg class="i"><use id="ph-icon" href="#i-bowl"/></svg></span>
+        <h1 id="ph-title">グルメ</h1>
+        <span class="ph-count"><b id="count">0</b>件</span>
       </div>
-      <p class="hero-lead" id="hero-lead">福井駅前と片町で、きょう行くお店を。</p>
     </section>
 
     <section class="filters" aria-label="絞り込み">
-      <div class="seg" id="zone-seg">
-        <button data-zone="" aria-pressed="true">すべて</button>
+      <label class="m-search">
+        <svg class="i"><use href="#i-search"/></svg>
+        <span class="visually-hidden">店名・ジャンルで探す</span>
+        <input id="q-m" type="search" placeholder="店名・ジャンルで探す" autocomplete="off" />
+      </label>
+      <div class="seg" id="zone-seg" role="group" aria-label="エリア">
+        <button data-zone="" aria-pressed="true">駅前・片町</button>
         <button data-zone="ekimae" aria-pressed="false">駅前</button>
         <button data-zone="katamachi" aria-pressed="false">片町</button>
       </div>
-      <label class="search">
-        <span class="visually-hidden">店名で探す</span>
-        <input id="q" type="search" placeholder="店名・ジャンルで探す" autocomplete="off" />
-      </label>
-      <div class="chips" id="genre-chips"></div>
+      <div class="chips" id="genre-chips" role="group" aria-label="ジャンル"></div>
     </section>
 
-    <p class="count" id="count" aria-live="polite"></p>
+    <h2 class="sec"><svg class="i"><use href="#i-pin"/></svg><span id="sec-title">お店</span></h2>
     <ul class="cards" id="cards"></ul>
     <button class="more" id="more" hidden>もっと見る</button>
   </main>
 
-  <section id="detail" class="detail" hidden></section>
+  <section id="detail" class="wrap detail" hidden></section>
 
-  <section class="inquiry" id="inquiry">
-    <h2>掲載・情報の修正について</h2>
-    <p>お店の情報を直したい、掲載をやめたい、写真やリンクを載せたい、というお店の方はこちらからご連絡ください。運営から折り返します。</p>
-    <form id="inquiry-form">
-      <label>店名<input name="shop_name" required maxlength="100" /></label>
-      <label>ご連絡先（メールアドレスまたは電話番号）<input name="contact" required maxlength="200" /></label>
-      <label>ご用件<textarea name="message" rows="4" maxlength="2000"></textarea></label>
-      <button type="submit" class="btn">送信する</button>
-      <p class="form-msg" id="inquiry-msg" role="status"></p>
-    </form>
+  <section class="wrap inquiry" id="inquiry">
+    <div class="inq-card">
+      <h2>お店の方へ</h2>
+      <p>情報の修正・掲載の取りやめ・写真やリンクの掲載（有料プラン）は、こちらからご連絡ください。運営から折り返します。</p>
+      <form id="inquiry-form">
+        <label>店名<input name="shop_name" required maxlength="100" /></label>
+        <label>ご連絡先（メールアドレスまたは電話番号）<input name="contact" required maxlength="200" /></label>
+        <label>ご用件<textarea name="message" rows="3" maxlength="2000"></textarea></label>
+        <button type="submit" class="btn">送信する</button>
+        <p class="form-msg" id="inquiry-msg" role="status"></p>
+      </form>
+    </div>
   </section>
 
-  <footer class="site-footer">
-    <p class="age-note">20歳未満の飲酒は法律で禁止されています。お酒は楽しく適量で。飲酒運転は絶対にやめましょう。</p>
+  <footer class="wrap site-footer">
+    <p class="age-note">20歳未満の飲酒は法律で禁止されています。飲酒運転は絶対にやめましょう。</p>
     <p>「PR」と表示しているお店は、掲載料をいただいている有料掲載のお店です。</p>
     <nav class="footer-nav">
       <a href="./terms.html">利用規約</a>
@@ -69,10 +100,17 @@
       <a href="./privacy.html">プライバシーポリシー</a>
       <a href="https://www.threads.net/@fukui_ekimae" target="_blank" rel="noopener">Threads @fukui_ekimae</a>
     </nav>
-    <p class="copy">運営：ふくふく</p>
+    <p class="copy">© ふくふく</p>
   </footer>
 
+  <nav class="tabbar" aria-label="メニュー">
+    <button data-mode="day" aria-pressed="true"><span class="ic"><svg class="i"><use href="#i-bowl"/></svg></span>グルメ</button>
+    <button data-mode="night" aria-pressed="false"><span class="ic"><svg class="i"><use href="#i-glass"/></svg></span>夜のお店</button>
+    <button data-act="search"><span class="ic"><svg class="i"><use href="#i-search"/></svg></span>さがす</button>
+    <a href="./owner/"><span class="ic"><svg class="i"><use href="#i-store"/></svg></span>お店の方へ</a>
+  </nav>
+
   <script src="./config.js?v=1"></script>
-  <script src="./app.js?v=1"></script>
+  <script src="./app.js?v=3"></script>
 </body>
 </html>

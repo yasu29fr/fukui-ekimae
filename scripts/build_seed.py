@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import html
 import json
 import re
 import sys
@@ -43,7 +44,7 @@ ZONE = {"駅前": "ekimae", "片町": "katamachi"}
 
 
 def norm(s: str) -> str:
-    return unicodedata.normalize("NFKC", s or "").strip()
+    return unicodedata.normalize("NFKC", html.unescape(s or "")).strip()
 
 
 def clean_name(name: str) -> str:
