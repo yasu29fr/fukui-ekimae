@@ -31,7 +31,7 @@
   </script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yakuhanjp@4.1.1/dist/css/yakuhanjp.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" />
-  <link rel="stylesheet" href="./styles.css?v=26" />
+  <link rel="stylesheet" href="./styles.css?v=27" />
 </head>
 <body data-mode="day">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -67,6 +67,11 @@
   </header>
 
   <main id="app" class="wrap">
+    <!-- スマホ用：上部の「グルメ／夜のお店」切り替え（PC はヘッダーのメニュー） -->
+    <nav class="mode-tabs" aria-label="グルメと夜のお店の切り替え">
+      <button data-mode="day" aria-pressed="true"><svg class="i"><use href="#i-bowl"/></svg><span>グルメ</span></button>
+      <button data-mode="night" aria-pressed="false"><svg class="i"><use href="#i-glass"/></svg><span>夜のお店</span></button>
+    </nav>
     <section class="page-head">
       <p class="eyebrow"><span class="band" id="ph-band">GOURMET</span><span class="season" id="season"></span></p>
       <p class="lead" id="lead"></p>
