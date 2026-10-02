@@ -59,10 +59,16 @@
 
   async function load() {
     if (hasDb) {
-      const url = `${cfg.supabaseUrl}/rest/v1/public_shops?select=*`;
-      const res = await fetch(url, { headers: { apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}` } });
-      if (!res.ok) throw new Error(`エラー ${res.status}`);
-      return res.json();
+      // Supabase は 1 回に 1,000 件までしか返さないので、1,000 件ずつ続けて読む
+      const rows = [], size = 1000;
+      for (let from = 0; ; from += size) {
+        const url = `${cfg.supabaseUrl}/rest/v1/public_shops?select=*&order=slug&offset=${from}&limit=${size}`;
+        const res = await fetch(url, { headers: { apikey: cfg.supabaseAnonKey, Authorization: `Bearer ${cfg.supabaseAnonKey}` } });
+        if (!res.ok) throw new Error(`エラー ${res.status}`);
+        const page = await res.json();
+        rows.push(...page);
+        if (page.length < size) return rows;
+      }
     }
     const res = await fetch("./data/shops.json");
     if (!res.ok) throw new Error(`エラー ${res.status}`);
