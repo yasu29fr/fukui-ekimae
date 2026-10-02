@@ -9,7 +9,7 @@
   --stamp: #c4372c; --pr: #c4372c; --pr-soft: #fcefed; --band: #c4372c;
   --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 8px 22px rgba(0, 0, 0, .05);
   --tabbar: 64px; --radius: 18px;
-  --f-body: "Zen Kaku Gothic New", "Hiragino Sans", system-ui, sans-serif;
+  --f-body: "YakuHanJP", "Zen Kaku Gothic New", "Hiragino Sans", system-ui, sans-serif;
   --f-head: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", var(--f-body);
   --f-en: "Jost", var(--f-body);
 }
