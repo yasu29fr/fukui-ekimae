@@ -260,7 +260,7 @@
   if (demo) {
     const bar = document.createElement("div");
     bar.className = "demo-bar";
-    bar.innerHTML = "有料掲載の<b>見本</b>を表示しています（架空のお店です）";
+    bar.innerHTML = '<b>見本</b>を表示中（架空のお店）・<a href="./demo/credits.html">写真クレジット</a>';
     document.body.prepend(bar);
   }
 
