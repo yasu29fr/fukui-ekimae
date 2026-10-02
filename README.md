@@ -116,12 +116,13 @@ Meta for Developers でアプリを作り、Threads API の `threads_basic` と 
 ## 店のデータを作り直す
 
 調査で作った店のリスト（CSV）から、初期データを作り直せる。
+リストは非公開の `yasu29fr/fukui-ekimae-data` で作る（`python3 scripts/merge.py` → `list/対象店舗.csv`）。
 
 ```bash
-python scripts/build_seed.py 対象店舗.csv
+python scripts/build_seed.py ../fukui-ekimae-data/list/対象店舗.csv
 ```
 
-`supabase/seed/shops_public.sql`（公開項目）、`private/shops_private.sql`（住所・電話。コミットしない）、
+`supabase/seed/shops_public.sql`（公開項目）、`private/shops_private.sql`（住所・電話・調べた営業時間と定休日。コミットしない）、
 `docs/data/shops.json`（Supabase 未設定時の表示用）が更新される。同じ店（slug が同じ）は上書きされ、
 オーナーが設定した Instagram は上書きしない。
 

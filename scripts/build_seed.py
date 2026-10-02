@@ -53,6 +53,7 @@ def clean_name(name: str) -> str:
     n = re.sub(r"^[!！\s]+", "", n)
     n = re.sub(r"^\d{4}/\d{1,2}/\d{1,2}\s*(?:グランド)?(?:オープン|OPEN|open)[★☆!！\s]*", "", n)
     n = re.sub(r"^(?:【[^】]{1,30}】\s*)+", "", n)
+    n = re.sub(r"(?:\s*【[^】]{1,30}】)+$", "", n)
     return n.strip() or norm(name)
 
 
@@ -94,8 +95,11 @@ def main(path: str) -> None:
         js.append(dict(slug=slug, name=norm(r["店名"]), zone=zone, town=r["町"], category=category,
                        genre=g, instagram=handle_of(r["公式Instagram"]), is_paid=False))
         sources = '["' + '","'.join(s.strip() for s in r["情報源"].split("/") if s.strip()) + '"]'
+        # 営業時間・定休日は有料プランでだけ表に出る。調べた値を先に入れておき、お店が有料にしたとき直すだけで済むようにする。
+        note = "出典: " + r["出典URL"] + (f"\nWebサイト: {r['Webサイト']}" if r.get("Webサイト") else "")
         priv.append(f"update public.shops set address={q(norm(r['住所']))}, tel={q(r['電話'])}, "
-                    f"sources={q(sources)}::jsonb, admin_note={q('出典: ' + r['出典URL'])} where slug={q(slug)};")
+                    f"hours={q(norm(r.get('営業時間', '')))}, holiday={q(norm(r.get('定休日', '')))}, "
+                    f"sources={q(sources)}::jsonb, admin_note={q(note)} where slug={q(slug)};")
     head = ("-- build_seed.py が作るファイル。手で直さないこと。\n"
             "insert into public.shops (slug,name,zone,town,category,genre,instagram) values\n")
     tail = ("\non conflict (slug) do update set name=excluded.name, zone=excluded.zone, town=excluded.town,\n"
@@ -108,7 +112,7 @@ def main(path: str) -> None:
     (ROOT / "docs/data").mkdir(parents=True, exist_ok=True)
     (ROOT / "docs/data/shops.json").write_text(json.dumps(js, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     from collections import Counter
-    print(len(pub), "店", Counter(p.split(",")[4] for p in pub))
+    print(len(js), "店", dict(Counter(x["category"] for x in js)))
 
 
 if __name__ == "__main__":
