@@ -3,10 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <link rel="icon" href="./favicon-32.png" sizes="32x32" />
-  <link rel="icon" href="./favicon-64.png" sizes="64x64" />
+  <link rel="icon" id="fav32" href="./favicon-32.png" sizes="32x32" />
+  <link rel="icon" id="fav64" href="./favicon-64.png" sizes="64x64" />
   <link rel="icon" href="./icon-192.png" sizes="192x192" />
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <link rel="apple-touch-icon" id="touch-icon" href="./apple-touch-icon.png" />
+  <link rel="preload" as="image" href="./logo-night-96.png" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://yasu29fr.github.io/fukui-ekimae/" />
   <meta property="og:image" content="https://yasu29fr.github.io/fukui-ekimae/og.png" />
@@ -49,7 +50,7 @@
   <header class="hd">
     <div class="hd-in">
       <a class="logo" href="#/">
-        <span class="emblem" aria-hidden="true"><img src="./logo-96.png" alt="" width="40" height="40" /></span>
+        <span class="emblem" aria-hidden="true"><img id="logo-img" src="./logo-96.png" alt="" width="40" height="40" /></span>
         <span class="logo-t"><small>FUKUI EKIMAE</small><b>ふくふく</b></span>
       </a>
       <nav class="hd-nav" aria-label="切り替え">
@@ -141,6 +142,6 @@
   </nav>
 
   <script src="./config.js?v=1"></script>
-  <script src="./app.js?v=16"></script>
+  <script src="./app.js?v=17"></script>
 </body>
 </html>

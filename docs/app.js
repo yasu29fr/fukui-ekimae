@@ -132,9 +132,19 @@
     </li>`;
   }
 
+  // 昼と夜で、ロゴとファビコンを切り替える（夜は片町のイラスト）
+  function setIcons(night) {
+    const sfx = night ? "-night" : "";
+    $("#logo-img").src = `./logo${sfx}-96.png`;
+    $("#fav32").href = `./favicon${sfx}-32.png`;
+    $("#fav64").href = `./favicon${sfx}-64.png`;
+    $("#touch-icon").href = `./apple-touch-icon${sfx}.png`;
+  }
+
   function renderList() {
     const night = state.mode === "night";
     document.body.dataset.mode = state.mode;
+    setIcons(night);
     document.querySelectorAll("[data-mode]").forEach((b) => b.tagName === "BUTTON" && b.setAttribute("aria-pressed", String(b.dataset.mode === state.mode)));
     document.querySelectorAll("#zone-seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.zone === state.zone)));
     document.querySelector('meta[name="theme-color"]').content = night ? "#62448c" : "#0b0b0d";
@@ -170,6 +180,7 @@
     if (!s) { location.hash = "#/"; return; }
     const night = s.category === "night";
     document.body.dataset.mode = night ? "night" : "day";
+    setIcons(night);
     const photos = (s.is_paid && s.photos) || [];
     const links = (s.is_paid && s.links) || [];
     // 近くの同じジャンル（同じエリア・同じ区分）。有料のお店を先に。
