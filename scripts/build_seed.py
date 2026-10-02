@@ -86,7 +86,9 @@ def main(path: str) -> None:
             continue
         r["店名"] = clean_name(r["店名"])
         g = genre_of(r["ジャンル"], r["店名"])
-        category = "night" if (r.get("夜") == "○" or g in NIGHT_GENRES) else "gourmet"
+        # 夜のお店は、ジャンルがバー・スナック・ラウンジの店だけ。
+        # （情報源の分類「居酒屋・バー」などに引きずられて、居酒屋や和食が夜に入らないように）
+        category = "night" if g in NIGHT_GENRES else "gourmet"
         slug = slug_of(r["店名"], r["住所"])
         pub.append(f"({q(slug)},{q(norm(r['店名']))},{q(zone)},{q(r['町'])},{q(category)},{q(g)},{q(handle_of(r['公式Instagram']))})")
         js.append(dict(slug=slug, name=norm(r["店名"]), zone=zone, town=r["町"], category=category,
