@@ -137,7 +137,7 @@
     document.body.dataset.mode = state.mode;
     document.querySelectorAll("[data-mode]").forEach((b) => b.tagName === "BUTTON" && b.setAttribute("aria-pressed", String(b.dataset.mode === state.mode)));
     document.querySelectorAll("#zone-seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.zone === state.zone)));
-    document.querySelector('meta[name="theme-color"]').content = night ? "#62448c" : "#33261d";
+    document.querySelector('meta[name="theme-color"]').content = night ? "#62448c" : "#0b0b0d";
     $("#ph-band").textContent = night ? "NIGHT" : "GOURMET";
     const now = new Date(), season = ["WINTER", "WINTER", "SPRING", "SPRING", "SPRING", "SUMMER", "SUMMER", "SUMMER", "AUTUMN", "AUTUMN", "AUTUMN", "WINTER"][now.getMonth()];
     $("#season").textContent = `${now.getFullYear()} ${season}`;
@@ -298,8 +298,6 @@
 
   // ?demo=1 のときだけ、有料掲載の見本（架空の店）を混ぜて表示する。本番の一覧には出さない。
   const demo = new URLSearchParams(location.search).has("demo");
-  // 配色の比較用（?theme=a / b / c）。既定は a。
-  document.body.dataset.theme = new URLSearchParams(location.search).get("theme") || "a";
   const loadDemo = () => (demo ? fetch("./demo/shops.json").then((r) => r.json()) : Promise.resolve([]));
   if (demo) {
     const bar = document.createElement("div");

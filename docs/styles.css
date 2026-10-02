@@ -2,12 +2,12 @@
    おでかけ帖の骨組み（色付きヘッダー・チケット型カード・下のタブバー）をもとに、
    昼は「のれん」、夜は「夕暮れの路地」の配色。夜も背景は明るめにして暗くしすぎない。 */
 :root {
-  /* 昼（グルメ）：焦げ茶〜黒に近い、落ち着いた上品な配色。差し色は真鍮のような金茶 */
-  --bg: #f5f1ea; --surface: #fffdf9; --ink: #2e241d; --muted: #7d6f62; --line: #e3d9cc;
-  --hd: #33261d; --hd-deep: #1f1610; --hd-ink: #ffffff;
-  --main: #5c4030; --main-soft: #efe6dc; --accent: #a8875a; --accent-soft: #f4ecdf;
-  --stamp: #8a5a3a; --pr: #8a6a32; --pr-soft: #f6eedc; --band: #33261d;
-  --shadow: 0 1px 2px rgba(50, 35, 25, .05), 0 8px 22px rgba(50, 35, 25, .07);
+  /* 昼（グルメ）：墨と朱。黒はリッチブラック、背景はごく薄い生成り、差し色は判子の朱色だけ */
+  --bg: #faf9f6; --surface: #ffffff; --ink: #0d0d0f; --muted: #6b6862; --line: #e7e3dc;
+  --hd: #0b0b0d; --hd-deep: #000000; --hd-ink: #ffffff;
+  --main: #0d0d0f; --main-soft: #efede8; --accent: #c4372c; --accent-soft: #f8e6e3;
+  --stamp: #c4372c; --pr: #c4372c; --pr-soft: #fcefed; --band: #c4372c;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 8px 22px rgba(0, 0, 0, .05);
   --tabbar: 64px; --radius: 18px;
   --f-body: "Zen Kaku Gothic New", "Hiragino Sans", system-ui, sans-serif;
   --f-head: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", var(--f-body);
@@ -260,7 +260,7 @@ form input:focus, form textarea:focus { outline: 2px solid var(--main-soft); bor
 .d-near { max-width: 1180px; margin: 22px auto 0; }
 
 /* ── グルメ（昼）を締める：直線のヘッダー・小さめの角丸・角ゴシックの見出し・判子のスタンプ ──
-   配色は data-theme で切り替えて比べる（?theme=a / b / c）。決まったら1つに絞る。 */
+   配色は「墨と朱」：リッチブラック × ごく薄い生成り × 朱色の差し色 */
 body[data-mode="day"] { --radius: 10px; }
 body[data-mode="day"] .hd::after { background: var(--accent); height: 3px; bottom: -3px; }
 body[data-mode="day"] h1, body[data-mode="day"] h2, body[data-mode="day"] h3, body[data-mode="day"] .logo-t b,
@@ -281,23 +281,7 @@ body[data-mode="day"] .t-area { background: transparent; border: 1px solid var(-
 body[data-mode="day"] .sec::after { border-top: 1px solid var(--line); }
 body[data-mode="day"] .ph-row { border-bottom: 1px solid var(--ink); }
 
-/* A：墨と朱 */
-body[data-mode="day"][data-theme="a"] {
-  --bg: #f3f0ea; --surface: #ffffff; --ink: #1a1816; --muted: #6f6a63; --line: #dcd6cc;
-  --hd: #1a1816; --hd-deep: #000000; --main: #1a1816; --main-soft: #ebe7e0; --accent: #c4372c; --accent-soft: #f7e3df;
-  --stamp: #c4372c; --pr: #c4372c; --pr-soft: #fbeeec; --band: #c4372c;
-}
-/* B：漆と金 */
-body[data-mode="day"][data-theme="b"] {
-  --bg: #f2ede4; --surface: #fffdf8; --ink: #211913; --muted: #75695d; --line: #ddd3c4;
-  --hd: #211913; --hd-deep: #120c08; --main: #211913; --main-soft: #ebe3d6; --accent: #b38b3e; --accent-soft: #f5ecd9;
-  --stamp: #9c7630; --pr: #9c7630; --pr-soft: #f7efdc; --band: #b38b3e;
-}
-/* C：焦茶と銅 */
-body[data-mode="day"][data-theme="c"] {
-  --bg: #f6f2ec; --surface: #ffffff; --ink: #2a1d15; --muted: #7b6b5f; --line: #e2d8cc;
-  --hd: #2a1d15; --hd-deep: #170f0a; --main: #2a1d15; --main-soft: #efe5db; --accent: #b4623a; --accent-soft: #f7e6dc;
-  --stamp: #b4623a; --pr: #a35632; --pr-soft: #f9ebe2; --band: #b4623a;
-}
 body[data-mode="day"] .band { color: #fff; }
 body[data-mode="day"] .mood-t b { letter-spacing: .02em; }
+.mood-t b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 420px) { .mood-t b { font-size: .82rem; } .mood { gap: 8px; padding: 10px; } .mood-ic { width: 36px; height: 36px; font-size: 1.15rem; } }
