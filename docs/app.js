@@ -12,6 +12,21 @@
   const ZONES = { ekimae: "駅前", katamachi: "片町" };
   const SHORT = { "寿司・海鮮": "寿司", "そば・うどん": "そば", "焼肉・肉料理": "焼肉", "焼鳥・串": "焼鳥", "イタリアン・フレンチ": "洋風",
     "アジア・各国料理": "各国", "カフェ・スイーツ": "カフェ", "スナック・ラウンジ": "スナック" };
+  // 「きょうの気分」：選ぶとジャンル（とエリア）で絞り込む
+  const MOODS = {
+    day: [
+      { id: "lunch", icon: "🍱", label: "お昼ごはん", sub: "定食・そば・麺", genres: ["和食", "そば・うどん", "ラーメン", "洋食", "中華", "寿司・海鮮"] },
+      { id: "cafe", icon: "☕", label: "ひと休み", sub: "カフェ・スイーツ", genres: ["カフェ・スイーツ"] },
+      { id: "party", icon: "🍻", label: "みんなで飲み会", sub: "居酒屋・焼鳥", genres: ["居酒屋", "焼鳥・串", "焼肉・肉料理"] },
+      { id: "special", icon: "✨", label: "ちょっといい店", sub: "洋風・寿司・和食", genres: ["イタリアン・フレンチ", "寿司・海鮮", "アジア・各国料理"] },
+    ],
+    night: [
+      { id: "bar", icon: "🍸", label: "しっぽりバー", sub: "カクテル・洋酒", genres: ["バー"] },
+      { id: "snack", icon: "🎤", label: "歌えるスナック", sub: "スナック・ラウンジ", genres: ["スナック・ラウンジ"] },
+      { id: "ekimae", icon: "🚉", label: "駅前で一杯", sub: "電車の前にさくっと", zone: "ekimae" },
+      { id: "katamachi", icon: "🏮", label: "片町ではしご", sub: "二軒目・三軒目に", zone: "katamachi" },
+    ],
+  };
   const svg = (id) => `<svg class="i"><use href="#i-${id}"/></svg>`;
   const LINK_LABEL = {
     web: "ホームページ", tabelog: "食べログ", hotpepper: "ホットペッパー", gmap: "Googleマップ", x: "X",
@@ -20,7 +35,8 @@
 
   const $ = (s) => document.querySelector(s);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const state = { mode: "day", zone: "", genre: "", q: "", shown: PAGE, shops: [] };
+  const state = { mode: "day", zone: "", genre: "", mood: "", q: "", shown: PAGE, shops: [] };
+  const currentMood = () => (MOODS[state.mode] || []).find((m) => m.id === state.mood);
 
   try {
     const saved = JSON.parse(localStorage.getItem("fukufuku") || "{}");
@@ -64,11 +80,13 @@
       (state.mode === "night" ? s.category === "night" : s.category === "gourmet") &&
       (!state.zone || s.zone === state.zone) &&
       (!state.genre || s.genre === state.genre) &&
+      (!currentMood()?.genres || currentMood().genres.includes(s.genre)) &&
       (!q || `${s.name} ${s.genre} ${s.town}`.toLowerCase().includes(q)));
   }
 
   function renderChips() {
-    const pool = state.shops.filter((s) => (state.mode === "night" ? s.category === "night" : s.category === "gourmet"));
+    const mg = currentMood()?.genres;
+    const pool = state.shops.filter((s) => (state.mode === "night" ? s.category === "night" : s.category === "gourmet") && (!mg || mg.includes(s.genre)));
     const counts = {};
     pool.forEach((s) => { counts[s.genre] = (counts[s.genre] || 0) + 1; });
     const genres = Object.keys(counts).sort((a, b) => (a === "その他") - (b === "その他") || counts[b] - counts[a]);
@@ -123,6 +141,10 @@
     const zoneName = state.zone ? ZONES[state.zone] : "駅前・片町";
     $("#sec-title").textContent = `${zoneName}の${state.genre || (night ? "夜のお店" : "お店")}`;
     renderChips();
+    $("#moods").innerHTML = MOODS[state.mode].map((m) => `<button class="mood" data-mood="${m.id}" aria-pressed="${state.mood === m.id}">
+      <span class="mood-ic" aria-hidden="true">${m.icon}</span><span class="mood-t"><b>${esc(m.label)}</b><small>${esc(m.sub)}</small></span></button>`).join("");
+    const mood = currentMood();
+    if (mood) $("#sec-title").textContent = mood.zone ? `「${mood.label}」のお店` : `${state.zone ? ZONES[state.zone] : "駅前・片町"}で「${mood.label}」`;
     const list = filtered();
     $("#count").textContent = list.length;
     $("#cards").innerHTML = list.length
@@ -175,11 +197,20 @@
     const t = e.target.closest("button");
     if (!t) return;
     if (t.dataset.mode) {
-      state.mode = t.dataset.mode; state.genre = ""; state.shown = PAGE; remember();
+      state.mode = t.dataset.mode; state.genre = ""; state.mood = ""; state.shown = PAGE; remember();
       if (location.hash.startsWith("#/shop/")) location.hash = "#/"; else renderList();
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
     else if (t.dataset.act === "search") { if (location.hash.startsWith("#/shop/")) location.hash = "#/"; setTimeout(() => $("#q-m").focus(), 50); }
+    else if (t.dataset.mood) {
+      const m = MOODS[state.mode].find((x) => x.id === t.dataset.mood);
+      const prev = currentMood();
+      if (prev?.zone) state.zone = "";            // エリアの気分から離れるときは、エリアも戻す
+      state.mood = state.mood === m.id ? "" : m.id;
+      if (state.mood) { state.genre = ""; if (m.zone) state.zone = m.zone; }
+      state.shown = PAGE; renderList();
+      document.querySelector(".sec").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
     else if ("zone" in t.dataset && t.closest("#zone-seg")) { state.zone = t.dataset.zone; state.shown = PAGE; remember(); renderList(); }
     else if ("genre" in t.dataset) { state.genre = t.dataset.genre; state.shown = PAGE; renderList(); }
     else if (t.id === "more") { state.shown += PAGE; renderList(); }

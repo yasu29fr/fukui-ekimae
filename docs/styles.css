@@ -82,6 +82,22 @@ svg.i { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-widt
 .ph-count { margin-left: auto; color: var(--muted); font-size: .8rem; font-weight: 700; }
 .ph-count b { font-size: 1.5rem; color: var(--main); margin-right: 2px; }
 
+/* ── きょうの気分 ── */
+.moods { padding: 16px 0 4px; }
+.moods-t { font-size: .9rem; font-weight: 800; margin: 0 0 10px; }
+.mood-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (min-width: 900px) { .mood-row { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.mood { min-width: 0; display: flex; align-items: center; gap: 10px; text-align: left; border: 1.5px solid var(--line); background: var(--surface); border-radius: 16px; padding: 10px 12px;
+  cursor: pointer; box-shadow: var(--shadow); transition: transform .12s, border-color .15s, background .15s; }
+.mood:hover { transform: translateY(-1px); border-color: var(--main); }
+.mood-ic { width: 40px; height: 40px; border-radius: 12px; background: var(--accent-soft); display: grid; place-items: center; font-size: 1.3rem; flex: none; }
+.mood-t { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
+.mood-t b { font-size: .88rem; font-weight: 800; }
+.mood-t small { font-size: .68rem; color: var(--muted); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mood[aria-pressed="true"] { background: var(--main); border-color: var(--main); color: #fff; }
+.mood[aria-pressed="true"] small { color: rgba(255,255,255,.85); }
+.mood[aria-pressed="true"] .mood-ic { background: rgba(255,255,255,.2); }
+
 /* ── 絞り込み ── */
 .filters { padding: 12px 0 8px; display: grid; gap: 10px; }
 /* PC だけ絞り込みを上に固定する（スマホは画面が狭いので固定しない） */
