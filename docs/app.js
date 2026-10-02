@@ -298,6 +298,8 @@
 
   // ?demo=1 のときだけ、有料掲載の見本（架空の店）を混ぜて表示する。本番の一覧には出さない。
   const demo = new URLSearchParams(location.search).has("demo");
+  // 配色の比較用（?theme=a / b / c）。既定は a。
+  document.body.dataset.theme = new URLSearchParams(location.search).get("theme") || "a";
   const loadDemo = () => (demo ? fetch("./demo/shops.json").then((r) => r.json()) : Promise.resolve([]));
   if (demo) {
     const bar = document.createElement("div");
