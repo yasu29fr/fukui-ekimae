@@ -130,11 +130,11 @@
     const top = s.is_paid && s.photos && s.photos[0];
     return `<li class="ticket${s.is_paid ? " is-pr" : ""}">
       <a class="t-link" href="#/shop/${encodeURIComponent(s.slug)}">
-        ${top ? `<div class="t-photo" style="background-image:url('${esc(photoUrl(top))}')" role="img" aria-label="${esc(top.caption || s.name)}"><span class="pr-tag">PR</span></div>` : ""}
+        ${top ? `<div class="t-photo" style="background-image:url('${esc(photoUrl(top))}')" role="img" aria-label="${esc(top.caption || s.name)}"></div>` : ""}
         <div class="t-main">
           ${stamp(s)}
           <div class="t-text">
-            <div class="t-tags"><span class="kind"><i></i>${esc(s.genre)}</span>${s.is_paid && !top ? '<span class="pr-tag">PR</span>' : ""}</div>
+            <div class="t-tags"><span class="kind"><i></i>${esc(s.genre)}</span></div>
             <h3 class="t-title">${esc(s.name)}</h3>
             ${s.is_paid && s.catch ? `<p class="t-note">${esc(s.catch)}</p>` : ""}
             ${area(s)}
@@ -175,7 +175,7 @@
     const mood = currentMood();
     if (mood) $("#sec-title").textContent = mood.zone ? `「${mood.label}」のお店` : `${state.zone ? ZONES[state.zone] : "駅前・片町"}で「${mood.label}」`;
     const all = filtered();
-    // 有料（PR）のお店は「PICK UP」に写真つきで出し、下の一覧には無料のお店を並べる
+    // 有料のお店は「PICK UP」（見出しに PR 表記）に写真つきで出し、下の一覧には無料のお店を並べる
     const picks = all.filter((s) => s.is_paid), list = all.filter((s) => !s.is_paid);
     $("#count").textContent = all.length;
     $("#pickup").hidden = !picks.length;
@@ -238,7 +238,7 @@
           ${photos.length > 1 ? `<div class="d-thumbs">${photos.map((p, i) => `<button type="button" data-slide="${i}" aria-label="${i + 1}枚目" aria-current="${i === 0}"><img src="${esc(photoUrl(p))}" alt="" loading="lazy" /></button>`).join("")}</div>` : ""}
         </div>` : ""}
         <header class="d-head">
-          <p class="eyebrow"><span class="band">${night ? "NIGHT" : "GOURMET"}</span>${s.is_paid ? '<span class="pr-tag">PR</span>' : ""}</p>
+          <p class="eyebrow"><span class="band">${night ? "NIGHT" : "GOURMET"}</span></p>
           <div class="d-title">
             ${stamp(s)}
             <div><h1>${esc(s.name)}</h1>${s.is_paid && s.catch ? `<p class="d-catch">${esc(s.catch)}</p>` : ""}</div>
