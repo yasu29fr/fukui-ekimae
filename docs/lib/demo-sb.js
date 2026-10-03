@@ -101,6 +101,8 @@ export function createDemoClient(role) {
     auth: {
       onAuthStateChange(cb) { setTimeout(() => cb(session ? "SIGNED_IN" : "SIGNED_OUT", session), 0); return { data: { subscription: { unsubscribe() {} } } }; },
       signInWithOtp: async () => ({ error: null }),
+      signInWithPassword: async () => ({ error: { message: "見本のため、ログインはできません" } }),
+      updateUser: async () => ({ data: {}, error: null }),
       signOut: async () => ({ error: null }),
     },
     storage: { from: () => ({

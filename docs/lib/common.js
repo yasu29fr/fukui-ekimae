@@ -1,5 +1,5 @@
 // オーナー画面・運営画面で共通の部品（Supabase への接続、画像の縮小など）
-import { createDemoClient, demoUrls } from "./demo-sb.js?v=2";
+import { createDemoClient, demoUrls } from "./demo-sb.js?v=3";
 
 export const cfg = window.FUKUFUKU_CONFIG || {};
 // ?demo=login / free / owner / admin のときは、見本のデータで画面だけ動かす（保存はされない）
@@ -75,30 +75,58 @@ export function toast(msg, kind = "") {
 
 // メールのリンクでログインする画面（招待済みの人だけ。新規登録はさせない）
 export function renderLogin(root, title) {
+  // ログインは 2 通り：メールで届くリンク（いつもどおり）と、パスワード（ログイン後に設定した人だけ）
+  let mode = "link";
   root.innerHTML = `
     <section class="panel narrow login-card">
       <div class="emblem-lg" aria-hidden="true">ふ</div>
       <p class="en">LOGIN</p>
       <h1>${esc(title)}</h1>
-      <p class="muted">登録済みのメールアドレスに、ログイン用のリンクをお送りします。パスワードはいりません。</p>
-      <div class="login-steps">
-        <div><b>01</b>アドレスを入力</div>
-        <div><b>02</b>メールを開く</div>
-        <div><b>03</b>リンクで入る</div>
+      <div class="seg login-seg" role="group" aria-label="ログインの方法">
+        <button type="button" data-mode="link" aria-pressed="true">メールでリンク</button>
+        <button type="button" data-mode="password" aria-pressed="false">パスワード</button>
+      </div>
+      <div data-pane="link">
+        <p class="muted">登録済みのメールアドレスに、ログイン用のリンクをお送りします。パスワードはいりません。</p>
+        <div class="login-steps">
+          <div><b>01</b>アドレスを入力</div>
+          <div><b>02</b>メールを開く</div>
+          <div><b>03</b>リンクで入る</div>
+        </div>
+      </div>
+      <div data-pane="password" hidden>
+        <p class="muted">パスワードは、一度リンクでログインしたあと、右上のメールアドレスを押すと設定できます。<br>忘れたときは「メールでリンク」からログインして設定し直してください。</p>
       </div>
       <form id="login-form">
-        <label>メールアドレス<input type="email" name="email" required autocomplete="email" placeholder="shop@example.com" /></label>
-        <button class="btn" type="submit">ログイン用のリンクを送る</button>
+        <label>メールアドレス<input type="email" name="email" required autocomplete="username" placeholder="shop@example.com" /></label>
+        <label data-pane="password" hidden>パスワード<input type="password" name="password" autocomplete="current-password" minlength="8" /></label>
+        <button class="btn" type="submit" id="login-btn">ログイン用のリンクを送る</button>
         <p class="form-msg" id="login-msg" role="status"></p>
       </form>
       <p class="muted small">掲載のお申し込み・メールアドレスの登録は、<a href="../#inquiry">お問い合わせ</a>から運営にご連絡ください。</p>
     </section>`;
-  $("#login-form", root).addEventListener("submit", async (e) => {
+  const form = $("#login-form", root), msg = $("#login-msg", root);
+  $(".login-seg", root).addEventListener("click", (e) => {
+    const b = e.target.closest("[data-mode]"); if (!b) return;
+    mode = b.dataset.mode;
+    root.querySelectorAll(".login-seg button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    root.querySelectorAll("[data-pane]").forEach((el) => { el.hidden = el.dataset.pane !== mode; });
+    form.password.required = mode === "password";
+    $("#login-btn", root).textContent = mode === "password" ? "ログインする" : "ログイン用のリンクを送る";
+    msg.textContent = "";
+  });
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const msg = $("#login-msg", root);
+    const email = form.email.value.trim();
+    if (mode === "password") {
+      msg.textContent = "確認しています…";
+      const { error } = await sb.auth.signInWithPassword({ email, password: form.password.value });
+      msg.textContent = error ? "メールアドレスかパスワードが違います。パスワードを設定していない場合は「メールでリンク」をお使いください。" : "";
+      return;
+    }
     msg.textContent = "送信しています…";
     const { error } = await sb.auth.signInWithOtp({
-      email: e.target.email.value.trim(),
+      email,
       options: { shouldCreateUser: false, emailRedirectTo: location.origin + location.pathname },
     });
     msg.textContent = error
@@ -107,11 +135,45 @@ export function renderLogin(root, title) {
   });
 }
 
+// パスワードの設定・変更（ヘッダーのメールアドレスを押すと開く）
+function openAccount(user) {
+  let dlg = document.getElementById("account-dlg");
+  if (!dlg) {
+    dlg = document.createElement("dialog");
+    dlg.id = "account-dlg";
+    dlg.className = "account-dlg";
+    document.body.append(dlg);
+  }
+  dlg.innerHTML = `
+    <form method="dialog" class="account-form">
+      <p class="en">ACCOUNT</p>
+      <h2>パスワードの設定</h2>
+      <p class="muted small">${esc(user.email || "")}<br>パスワードを設定すると、次からはメールを待たずにログインできます。ログイン用のリンクも今までどおり使えます。</p>
+      <input type="text" name="username" value="${esc(user.email || "")}" autocomplete="username" hidden />
+      <label>新しいパスワード（8文字以上）<input type="password" name="pw" minlength="8" required autocomplete="new-password" /></label>
+      <label>もう一度<input type="password" name="pw2" minlength="8" required autocomplete="new-password" /></label>
+      <p class="form-msg" role="status"></p>
+      <div class="row"><button type="submit" class="btn" value="save">設定する</button><button type="button" class="btn-ghost" data-close>閉じる</button></div>
+    </form>`;
+  const f = dlg.querySelector("form"), m = dlg.querySelector(".form-msg");
+  dlg.querySelector("[data-close]").onclick = () => dlg.close();
+  f.onsubmit = async (e) => {
+    e.preventDefault();
+    if (f.pw.value !== f.pw2.value) return (m.textContent = "2回の入力が一致しません。");
+    m.textContent = "設定しています…";
+    const { error } = await sb.auth.updateUser({ password: f.pw.value });
+    if (error) return (m.textContent = "設定できませんでした：" + error.message);
+    dlg.close(); toast("パスワードを設定しました");
+  };
+  dlg.showModal();
+}
+
 // ヘッダーに、ログイン中のメールアドレスを出す
 export function showWho(user) {
   const el = document.getElementById("who");
   if (!el || !user) return;
   el.textContent = user.email || user.id;
-  el.title = `ログイン中：${user.email || ""}（ID ${user.id}）`;
+  el.title = `ログイン中：${user.email || ""}（ID ${user.id}）・押すとパスワードを設定できます`;
   el.hidden = false;
+  el.onclick = () => openAccount(user);
 }

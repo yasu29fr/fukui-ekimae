@@ -79,10 +79,20 @@ body.console-admin { --btn: #3d5566; }
 .cat-seg { margin-bottom: 12px; }
 
 /* ヘッダーのログイン中アドレス */
-.who { color: rgba(255,255,255,.85); font-size: .78rem; max-width: 40vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 4px; }
+.who { background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline dotted rgba(255,255,255,.4); text-underline-offset: 3px; font: inherit; color: rgba(255,255,255,.85); font-size: .78rem; max-width: 40vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 4px; }
 .who::before { content: "ログイン中 "; opacity: .7; font-size: .7rem; }
 #logout { white-space: nowrap; }
 @media (max-width: 600px) {
   .hd-in:has(.who:not([hidden])) { flex-wrap: wrap; row-gap: 2px; }
   .who { order: 3; flex-basis: 100%; max-width: none; text-align: right; font-size: .7rem; margin: 0; }
 }
+
+/* ログイン方法の切り替え */
+.login-seg { margin: 14px auto 6px; }
+.login-seg [aria-pressed="true"] { background: var(--hd); color: #fff; }
+/* パスワード設定のダイアログ */
+.account-dlg { border: 0; border-radius: 18px; padding: 0; width: min(420px, calc(100vw - 32px)); box-shadow: 0 20px 60px rgba(0,0,0,.25); }
+.account-dlg::backdrop { background: rgba(0,0,0,.35); }
+.account-form { padding: 24px; display: grid; gap: 10px; }
+.account-form h2 { margin: 0; font-size: 1.1rem; }
+.account-form .en { margin: 0; }
