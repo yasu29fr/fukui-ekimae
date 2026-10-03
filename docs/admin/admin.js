@@ -1,5 +1,5 @@
 // 運営管理画面：問い合わせ・更新依頼・店の編集・オーナー招待・写真の非表示
-import { sb, ready, $, esc, ZONES, PLANS, photoUrl, isPaid, fmtDate, callFn, toast, renderLogin } from "../lib/common.js";
+import { sb, ready, $, esc, ZONES, PLANS, photoUrl, isPaid, fmtDate, callFn, toast, renderLogin, showWho } from "../lib/common.js?v=2";
 
 const root = $("#root");
 const TOWNS = ["大手", "順化", "中央", "つくも", "照手", "手寄", "日之出"];
@@ -22,6 +22,7 @@ else {
   sb.auth.onAuthStateChange(async (_e, session) => {
     if (!session) return renderLogin(root, "運営管理にログイン");
     $("#logout").hidden = false;
+    showWho(session.user);
     const { data: isAdmin } = await sb.rpc("is_admin");
     if (!isAdmin) return (root.innerHTML = `<section class="panel narrow"><h1>運営者ではありません</h1><p class="muted">${esc(session.user.email)} は運営者として登録されていません。</p></section>`);
     show();

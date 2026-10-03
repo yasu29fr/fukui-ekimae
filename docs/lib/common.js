@@ -106,3 +106,12 @@ export function renderLogin(root, title) {
       : "メールを送りました。届いたリンクを押してください（数分かかることがあります）。";
   });
 }
+
+// ヘッダーに、ログイン中のメールアドレスを出す
+export function showWho(user) {
+  const el = document.getElementById("who");
+  if (!el || !user) return;
+  el.textContent = user.email || user.id;
+  el.title = `ログイン中：${user.email || ""}（ID ${user.id}）`;
+  el.hidden = false;
+}
