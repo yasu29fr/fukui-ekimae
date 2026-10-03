@@ -60,6 +60,9 @@
    - Site URL：`https://yu-fukui.github.io/fukui-ekimae/`
    - Redirect URLs：`https://yu-fukui.github.io/fukui-ekimae/owner/` と `https://yu-fukui.github.io/fukui-ekimae/admin/`
 5. Authentication → Emails：**SMTP を設定する**（Resend・Gmail など）。Supabase 標準のメール送信は1時間に数通までしか送れず、招待メールが届かなくなる。
+6. Authentication → Users → Add user → Create new user で、運営者（`admins` 表のアドレス）を作る。
+   「Auto Confirm User」にチェック。パスワードは使わないので長いランダムな文字列でよい。
+   （新規登録をオフにしているので、ここで作っておかないとログイン用のメールが送れない）
    メールの文面（Invite user / Magic link）は日本語に書き換える。例：件名「ふくふく｜福井エキマエ お店の管理画面へのご招待」。
 6. Project Settings → API の **Project URL** と **anon public キー**を `docs/config.js` に書く（anon キーは公開してよい。service_role キーは書かない）。
 
