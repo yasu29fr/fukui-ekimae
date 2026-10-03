@@ -1,5 +1,5 @@
 // 運営管理画面：問い合わせ・更新依頼・店の編集・オーナー招待・写真の非表示
-import { sb, ready, $, esc, ZONES, PLANS, photoUrl, isPaid, fmtDate, callFn, toast, renderLogin, showWho } from "../lib/common.js?v=4";
+import { sb, ready, $, esc, ZONES, PLANS, photoUrl, isPaid, fmtDate, callFn, toast, renderLogin, showWho } from "../lib/common.js?v=5";
 
 const root = $("#root");
 const TOWNS = ["大手", "順化", "中央", "つくも", "照手", "手寄", "日之出"];
@@ -109,7 +109,7 @@ async function showInquiries(pane) {
 
 async function showShops(pane) {
   pane.innerHTML = `<section class="panel"><div class="spread"><h2><span class="en">SHOPS</span>店を探す</h2>${catSeg()}</div>
-    <div class="row"><input id="shop-q" placeholder="店名で検索" style="flex:1" />
+    <div class="row"><input id="shop-q" placeholder="店名・ふりがなで検索" style="flex:1" />
       <select id="shop-f"><option value="">すべて</option><option value="paid">有料</option><option value="hidden">非表示</option><option value="members">オーナーあり</option></select>
       <button class="btn-ghost" id="shop-new">店を追加</button></div>
     <div id="shop-results" style="margin-top:10px"></div></section><div id="shop-edit"></div>`;
@@ -118,7 +118,12 @@ async function showShops(pane) {
     const v = $("#shop-q").value.trim(), f = $("#shop-f").value;
     if (cat) q = q.eq("category", cat);
     pane.querySelectorAll(".cat-seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.cat === cat)));
-    if (v) q = q.ilike("name", `%${v}%`);
+    // 店名かふりがなで探す（カタカナで入れてもひらがなに直して探す）
+    if (v) {
+      const w = v.replace(/[,()"\\%*]/g, "");
+      const hira = w.replace(/[\u30a1-\u30f6]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0x60));
+      q = q.or(`name.ilike.*${w}*,kana.ilike.*${hira}*`);
+    }
     if (f === "paid") q = q.neq("plan", "free");
     if (f === "hidden") q = q.eq("is_hidden", true);
     const { data, error } = await q;
@@ -138,7 +143,7 @@ async function showShops(pane) {
 
 async function openShop(pane, id) {
   const box = $("#shop-edit", pane) || pane;
-  let s = { name: "", zone: "ekimae", town: "中央", category: "gourmet", genre: "その他", instagram: "", plan: "free", plan_until: null, is_hidden: false, address: "", tel: "", admin_note: "" };
+  let s = { name: "", kana: "", opened_on: null, zone: "ekimae", town: "中央", category: "gourmet", genre: "その他", instagram: "", plan: "free", plan_until: null, is_hidden: false, address: "", tel: "", admin_note: "" };
   let members = [];
   if (id) {
     const r = await sb.from("shops").select("*").eq("id", id).single(); s = r.data;
@@ -149,6 +154,10 @@ async function openShop(pane, id) {
     <h2>${id ? "店を編集" : "店を追加"}</h2>
     <form id="shop-form">
       <label>店名<input name="name" required value="${esc(s.name)}" /></label>
+      <div class="row">
+        <label style="flex:2">ふりがな（検索用・ひらがな）<input name="kana" value="${esc(s.kana || "")}" placeholder="例：そばどころ ふくふくあん" /></label>
+        <label style="flex:1">オープン日（1年間「NEW」表示）<input name="opened_on" type="date" value="${esc(s.opened_on || "")}" /></label>
+      </div>
       <div class="row">
         <label>エリア<select name="zone"><option value="ekimae" ${s.zone === "ekimae" ? "selected" : ""}>駅前</option><option value="katamachi" ${s.zone === "katamachi" ? "selected" : ""}>片町</option></select></label>
         <label>町<select name="town">${opt(TOWNS, s.town)}</select></label>
@@ -183,7 +192,7 @@ async function openShop(pane, id) {
     e.preventDefault();
     const f = e.target;
     const row = {
-      name: f.name.value.trim(), zone: f.zone.value, town: f.town.value, category: f.category.value, genre: f.genre.value,
+      name: f.name.value.trim(), kana: f.kana.value.trim(), opened_on: f.opened_on.value || null, zone: f.zone.value, town: f.town.value, category: f.category.value, genre: f.genre.value,
       instagram: f.instagram.value.trim().replace(/^@/, ""), plan: f.plan.value,
       plan_until: f.plan_until.value ? new Date(f.plan_until.value + "T23:59:59+09:00").toISOString() : null,
       is_hidden: f.is_hidden.checked, address: f.address.value.trim(), tel: f.tel.value.trim(), admin_note: f.admin_note.value,

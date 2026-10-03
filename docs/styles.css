@@ -356,3 +356,14 @@ button svg, button use, a svg, a use, .ic, .stamp, .mood-ic { pointer-events: no
 
 /* 夜の金色は線や面だけに使い、文字は濃い金か墨色にして読みやすく（コントラスト 4.5:1 以上） */
 body[data-mode="night"] .ticket.is-pr .t-tags .kind { color: var(--pr); }
+
+/* 1年以内にオープンしたお店 */
+.new-tag { display: inline-flex; align-items: center; background: var(--btn); color: #fff; border-radius: 4px; padding: 0 6px; font-size: .64rem; font-weight: 800; letter-spacing: .06em; margin-left: 6px; }
+.eyebrow .new-tag { font-size: .72rem; padding: 2px 8px; letter-spacing: .02em; }
+.t-opened { margin: 4px 0 0; font-size: .74rem; color: var(--btn); font-weight: 700; }
+/* ページのいちばん上へ */
+.to-top { position: fixed; right: 16px; bottom: calc(var(--tabbar) + 16px + env(safe-area-inset-bottom)); z-index: 19; width: 48px; height: 48px; border-radius: 50%;
+  border: 0; background: var(--btn); color: #fff; display: grid; place-items: center; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,.18); }
+.to-top svg { width: 24px; height: 24px; stroke-width: 2.4; }
+@media (min-width: 900px) { .to-top { bottom: 24px; right: 24px; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

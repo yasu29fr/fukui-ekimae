@@ -63,6 +63,11 @@ export function createDemoClient(role) {
     select(sel = "*", o = {}) { if (this.op === "select") this.sel = sel; this.head = o.head; this.wantRows = true; return this; }
     eq(c, v) { this.filters.push((r) => r[c] === v); return this; }
     neq(c, v) { this.filters.push((r) => r[c] !== v); return this; }
+    or(expr) {
+      const parts = expr.split(",").map((x) => x.match(/^(\w+)\.ilike\.\*(.*)\*$/)).filter(Boolean);
+      this.filters.push((r) => parts.some(([, c, v]) => String(r[c] || "").toLowerCase().includes(v.toLowerCase())));
+      return this;
+    }
     is(c, v) { this.filters.push((r) => (r[c] ?? null) === v); return this; }
     not(c, op, v) { this.filters.push((r) => (r[c] ?? null) !== v); return this; }
     in(c, a) { this.filters.push((r) => a.includes(r[c])); return this; }

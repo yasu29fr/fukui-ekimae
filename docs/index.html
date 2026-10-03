@@ -31,7 +31,7 @@
   </script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yakuhanjp@4.1.1/dist/css/yakuhanjp.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=M+PLUS+Rounded+1c:wght@700;800&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" />
-  <link rel="stylesheet" href="./styles.css?v=30" />
+  <link rel="stylesheet" href="./styles.css?v=31" />
 </head>
 <body data-mode="day">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -45,6 +45,8 @@
     <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
     <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
     <symbol id="i-tel" viewBox="0 0 24 24"><path d="M5 4h3.5l1.8 4.5-2.3 1.4a11 11 0 0 0 6.1 6.1l1.4-2.3L20 15.5V19a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="m4 7 8 6 8-6"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M6 14l6-6 6 6"/></symbol>
     <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
   </svg>
 
@@ -63,7 +65,7 @@
         <span class="visually-hidden">店名・ジャンルで探す</span>
         <input id="q" type="search" placeholder="店名・ジャンルで探す" autocomplete="off" />
       </label>
-      <a class="hd-btn" href="./owner/"><svg class="i"><use href="#i-store"/></svg><span class="t">お店の方へ</span></a>
+      <a class="hd-btn" href="#inquiry"><svg class="i"><use href="#i-mail"/></svg><span class="t">掲載・お問い合わせ</span></a>
     </div>
   </header>
 
@@ -139,6 +141,7 @@
       <a href="./tokushoho.html">特定商取引法に基づく表記</a>
       <a href="./privacy.html">プライバシーポリシー</a>
       <a href="https://www.threads.net/@fukui_ekimae" target="_blank" rel="noopener">Threads @fukui_ekimae</a>
+      <a href="./owner/">お店の方のログイン</a>
     </nav>
     <p class="copy">© ふくふく</p>
   </footer>
@@ -147,10 +150,12 @@
     <button data-mode="day" aria-pressed="true"><span class="ic"><svg class="i"><use href="#i-bowl"/></svg></span>グルメ</button>
     <button data-mode="night" aria-pressed="false"><span class="ic"><svg class="i"><use href="#i-glass"/></svg></span>夜のお店</button>
     <button data-act="search"><span class="ic"><svg class="i"><use href="#i-search"/></svg></span>さがす</button>
-    <a href="./owner/"><span class="ic"><svg class="i"><use href="#i-store"/></svg></span>お店の方へ</a>
+    <a href="#inquiry"><span class="ic"><svg class="i"><use href="#i-mail"/></svg></span>お問い合わせ</a>
   </nav>
 
+  <button type="button" class="to-top" id="to-top" aria-label="ページのいちばん上へ" hidden><svg class="i"><use href="#i-up"/></svg></button>
+
   <script src="./config.js?v=2"></script>
-  <script src="./app.js?v=25"></script>
+  <script src="./app.js?v=26"></script>
 </body>
 </html>

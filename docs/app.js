@@ -86,9 +86,26 @@
       (Boolean(b.instagram) - Boolean(a.instagram)) || a.name.localeCompare(b.name, "ja"));
   }
 
+  // 検索用にそろえる：全角半角・大文字小文字・カタカナ/ひらがな・空白や記号の違いを無視する
+  const fold = (t) => String(t || "").normalize("NFKC").toLowerCase()
+    .replace(/[\u30a1-\u30f6]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0x60))
+    .replace(/[\s・･&＆'’.,、。!！?？()（）「」\-\/]/g, "");
   function matchQ(s) {
-    const q = state.q.trim().toLowerCase();
-    return !q || `${s.name} ${s.genre} ${s.town}`.toLowerCase().includes(q);
+    const words = state.q.normalize("NFKC").trim().split(/\s+/).map(fold).filter(Boolean);
+    if (!words.length) return true;
+    // 店名・ふりがな・ジャンル・町名のどこかに、入力した言葉がすべて含まれていれば表示（ひらがなでも探せる）
+    const hay = s._hay || (s._hay = fold(`${s.name} ${s.kana || ""} ${s.genre} ${s.town}`) + " " + (s.kana || "").replace(/\s/g, ""));
+    return words.every((w) => hay.includes(w));
+  }
+
+  // 1年以内にオープンしたお店は、オープン日を出す
+  function openedLabel(s) {
+    if (!s.opened_on) return "";
+    // 日付は文字列のまま読む（見ている端末の時差で1日ずれないように）
+    const [y, m, d] = String(s.opened_on).split("-").map(Number);
+    const days = (Date.now() - Date.UTC(y, m - 1, d, -9)) / 86400000;   // 日本時間の0時から何日たったか
+    if (!y || days < 0 || days > 365) return "";
+    return `${y}年${m}月${d}日オープン`;
   }
 
   function filtered() {
@@ -134,10 +151,11 @@
         <div class="t-main">
           ${stamp(s)}
           <div class="t-text">
-            <div class="t-tags"><span class="kind"><i></i>${esc(s.genre)}</span></div>
+            <div class="t-tags"><span class="kind"><i></i>${esc(s.genre)}</span>${openedLabel(s) ? `<span class="new-tag">NEW</span>` : ""}</div>
             <h3 class="t-title">${esc(s.name)}</h3>
             ${s.is_paid && s.catch ? `<p class="t-note">${esc(s.catch)}</p>` : ""}
             ${area(s)}
+            ${openedLabel(s) ? `<p class="t-opened">${esc(openedLabel(s))}</p>` : ""}
           </div>
         </div>
       </a>
@@ -224,6 +242,7 @@
     const info = [
       ["エリア", `${ZONES[s.zone] || ""}${s.town ? "・" + s.town : ""}`],
       ["ジャンル", s.genre],
+      ...(openedLabel(s) ? [["オープン", openedLabel(s).replace("オープン", "")]] : []),
       ...(s.is_paid && s.hours ? [["営業時間", s.hours]] : []),
       ...(s.is_paid && s.holiday ? [["定休日", s.holiday]] : []),
       ...(s.is_paid && s.tel ? [["電話", s.tel]] : []),
@@ -238,7 +257,7 @@
           ${photos.length > 1 ? `<div class="d-thumbs">${photos.map((p, i) => `<button type="button" data-slide="${i}" aria-label="${i + 1}枚目" aria-current="${i === 0}"><img src="${esc(photoUrl(p))}" alt="" loading="lazy" /></button>`).join("")}</div>` : ""}
         </div>` : ""}
         <header class="d-head">
-          <p class="eyebrow"><span class="band">${night ? "NIGHT" : "GOURMET"}</span></p>
+          <p class="eyebrow"><span class="band">${night ? "NIGHT" : "GOURMET"}</span>${openedLabel(s) ? `<span class="new-tag">${esc(openedLabel(s))}</span>` : ""}</p>
           <div class="d-title">
             ${stamp(s)}
             <div><h1>${esc(s.name)}</h1>${s.is_paid && s.catch ? `<p class="d-catch">${esc(s.catch)}</p>` : ""}</div>
@@ -335,6 +354,17 @@
     setTimeout(() => d.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   }
   window.addEventListener("hashchange", () => (location.hash === "#inquiry" ? openInquiry() : route()));
+  // 同じ #inquiry をもう一度押したときも、フォームへ移る
+  document.addEventListener("click", (e) => {
+    const a = e.target instanceof Element && e.target.closest('a[href="#inquiry"]');
+    if (a && location.hash === "#inquiry") { e.preventDefault(); openInquiry(); }
+  });
+
+  // ページのいちばん上へ戻るボタン（少し下まで読んだら出す）
+  const toTop = $("#to-top");
+  const onScroll = () => { toTop.hidden = window.scrollY < 600; };
+  window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
+  toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
   if (location.hash === "#inquiry") setTimeout(openInquiry, 300);
 
   $("#inquiry-form").addEventListener("submit", async (e) => {
