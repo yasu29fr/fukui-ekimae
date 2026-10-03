@@ -79,8 +79,9 @@ async function showInquiries(pane) {
   const acts = (r) => inqTrash
     ? `<button class="btn-ghost" data-restore>元に戻す</button><button class="btn-ghost danger" data-purge>完全に削除</button>
        <span class="small muted">${fmtDate(r.deleted_at)} にゴミ箱へ</span>`
-    : `${r.status === "open" ? '<button class="btn-ghost" data-done>対応済みにする</button>' : '<span class="badge paid">対応済み</span>'}
-       <button class="btn-ghost danger" data-trash>ゴミ箱へ</button>`;
+    : r.status === "open"
+      ? '<button class="btn-ghost" data-done>対応済みにする</button>'   // 未対応のものはゴミ箱に入れられない（対応漏れを防ぐ）
+      : '<span class="badge paid">対応済み</span><button class="btn-ghost danger" data-trash>ゴミ箱へ</button>';
   pane.innerHTML = `<section class="panel"><div class="spread"><h2><span class="en">${inqTrash ? "TRASH" : "INQUIRIES"}</span>${inqTrash ? "ゴミ箱" : "掲載の問い合わせ"}</h2>
       <button class="btn-ghost" data-toggle-trash>${inqTrash ? "← 問い合わせ一覧へ" : `ゴミ箱${nTrash ? `（${nTrash}件）` : ""}`}</button></div>
     ${data?.length ? `<ul class="list">${data.map((r) => `
@@ -94,7 +95,7 @@ async function showInquiries(pane) {
     const id = li.dataset.id, name = li.querySelector("strong").textContent;
     let res;
     if ("done" in b.dataset) res = await sb.from("inquiries").update({ status: "done" }).eq("id", id);
-    else if ("trash" in b.dataset) res = await sb.from("inquiries").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+    else if ("trash" in b.dataset) res = await sb.from("inquiries").update({ deleted_at: new Date().toISOString() }).eq("id", id).eq("status", "done");
     else if ("restore" in b.dataset) res = await sb.from("inquiries").update({ deleted_at: null }).eq("id", id);
     else if ("purge" in b.dataset) {
       if (!confirm(`「${name}」の問い合わせを完全に削除します。元に戻せません。よろしいですか？`)) return;
