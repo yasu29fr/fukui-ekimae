@@ -254,6 +254,8 @@ form input:focus, form textarea:focus { outline: 2px solid var(--main-soft); bor
 .d-btn b { font-family: var(--f-head); font-size: .86rem; }
 .d-btn small { font-size: .68rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0; }
 .d-btn.ig { border-color: #f3d3e5; background: #fff7fb; }
+.d-btn.tel { border-color: var(--btn); background: var(--btn); color: #fff; }
+.d-btn.tel svg, .d-btn.tel small { color: #fff; }
 .d-btn.ig svg { color: #c13584; }
 .d-block { padding: 18px 20px 4px; }
 .d-block h2 { display: flex; align-items: baseline; gap: 10px; font-size: 1rem; margin: 0 0 10px; }

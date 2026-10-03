@@ -94,4 +94,14 @@ set role anon; select set_config('request.jwt.claims','',false);
 select pg_temp.check((select json_array_length(photos) from public_shops where slug='paid-shop') = 5, '公開ビューに写真5枚');
 select pg_temp.check((select description from public_shops where slug='free-shop') = '', '無料の店の紹介文は公開されない');
 reset role;
+
+-- 電話番号（0005_paid_tel.sql）：公開ビューでは有料の店だけ見える。有料オーナーは編集できる
+set role anon; select set_config('request.jwt.claims','',false);
+select pg_temp.check((select tel from public_shops where slug='paid-shop') = '0776000002', '有料の店は公開ビューに電話番号が出る');
+select pg_temp.check((select tel from public_shops where slug='free-shop') = '', '無料の店は電話番号が出ない');
+reset role;
+set role authenticated; select pg_temp.as_user('00000000-0000-0000-0000-0000000000b1','paid@example.com');
+update shops set tel = '0776-11-2222（代表）' where slug='paid-shop';
+reset role;
+select pg_temp.check((select tel from shops where slug='paid-shop') = '0776-11-2222', '有料オーナーは電話番号を編集できる（数字と記号だけ残る）');
 \echo ALL_RLS_TESTS_PASSED

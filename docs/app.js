@@ -55,6 +55,8 @@
     const q = `${s.name} 福井市${s.town || ""}`;
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
   }
+  // tel: リンク用に、数字と + だけにする
+  const telHref = (t) => String(t).replace(/[^0-9+]/g, "");
   function igUrl(h) { return `https://www.instagram.com/${encodeURIComponent(h)}/`; }
 
   async function load() {
@@ -224,6 +226,7 @@
       ["ジャンル", s.genre],
       ...(s.is_paid && s.hours ? [["営業時間", s.hours]] : []),
       ...(s.is_paid && s.holiday ? [["定休日", s.holiday]] : []),
+      ...(s.is_paid && s.tel ? [["電話", s.tel]] : []),
     ];
     el.innerHTML = `
       <button class="back" type="button" data-back>${svg("back")}一覧にもどる</button>
@@ -242,6 +245,7 @@
           </div>
         </header>
         <div class="d-actions">
+          ${s.is_paid && s.tel ? `<a class="d-btn tel" href="tel:${esc(telHref(s.tel))}">${svg("tel")}<span><b>電話する</b><small>${esc(s.tel)}</small></span></a>` : ""}
           ${s.instagram ? `<a class="d-btn ig" href="${igUrl(s.instagram)}" target="_blank" rel="noopener">${svg("ig")}<span><b>Instagram</b><small>@${esc(s.instagram)}</small></span></a>` : ""}
           <a class="d-btn" href="${mapUrl(s)}" target="_blank" rel="noopener">${svg("map")}<span><b>地図で見る</b><small>Googleマップ</small></span></a>
           ${links.map((l) => `<a class="d-btn" href="${esc(l.url)}" target="_blank" rel="noopener">${svg("link")}<span><b>${esc(l.label || LINK_LABEL[l.kind] || "リンク")}</b><small>${esc(LINK_LABEL[l.kind] || "")}</small></span></a>`).join("")}
@@ -249,7 +253,7 @@
         ${s.is_paid && s.description ? `<section class="d-block"><h2><span class="en">MESSAGE</span>お店から</h2><p class="d-desc">${esc(s.description)}</p></section>` : ""}
         <section class="d-block">
           <h2><span class="en">INFO</span>店舗情報</h2>
-          <dl class="d-info">${info.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
+          <dl class="d-info">${info.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${k === "電話" ? `<a href="tel:${esc(telHref(v))}">${esc(v)}</a>` : esc(v)}</dd></div>`).join("")}</dl>
           ${s.is_paid ? "" : '<p class="d-small">営業時間などの最新情報は、お店の公式アカウントでご確認ください。</p>'}
         </section>
       </article>
@@ -354,7 +358,7 @@
 
   // ?demo=1 のときだけ、有料掲載の見本（架空の店）を混ぜて表示する。本番の一覧には出さない。
   const demo = new URLSearchParams(location.search).has("demo");
-  const loadDemo = () => (demo ? fetch("./demo/shops.json").then((r) => r.json()) : Promise.resolve([]));
+  const loadDemo = () => (demo ? fetch("./demo/shops.json?v=2").then((r) => r.json()) : Promise.resolve([]));
   if (demo) {
     const bar = document.createElement("div");
     bar.className = "demo-bar";

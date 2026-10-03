@@ -1,175 +1,179 @@
 [
-  {
-    "slug": "demo-soba",
-    "name": "そば処 ふくふく庵（見本）",
-    "zone": "ekimae",
-    "town": "中央",
-    "category": "gourmet",
-    "genre": "そば・うどん",
-    "instagram": "",
-    "is_paid": true,
-    "is_demo": true,
-    "catch": "駅から3分、昼は打ちたてのおろしそば",
-    "description": "毎朝、福井県産のそば粉で手打ちしています。名物は大根おろしをたっぷりのせた越前おろしそば。夜は地酒と季節の一品料理でゆっくりどうぞ。\n※これは掲載イメージの見本です。実在のお店ではありません。",
-    "hours": "11:00〜14:30 ／ 17:30〜21:00（L.O. 20:30）",
-    "holiday": "水曜",
-    "links": [
-      {
-        "kind": "web",
-        "label": "ホームページ",
-        "url": "https://example.com/"
-      },
-      {
-        "kind": "tabelog",
-        "label": "食べログ",
-        "url": "https://example.com/"
-      },
-      {
-        "kind": "reserve",
-        "label": "予約する",
-        "url": "https://example.com/"
-      }
-    ],
-    "photos": [
-      {
-        "url": "./demo/soba-1.jpg",
-        "caption": "名物の辛味おろしそば"
-      },
-      {
-        "url": "./demo/soba-3.jpg",
-        "caption": "のれんの入口"
-      },
-      {
-        "url": "./demo/soba-2.jpg",
-        "caption": "昼の定食セット"
-      }
-    ]
-  },
-  {
-    "slug": "demo-cafe",
-    "name": "喫茶 ことり（見本）",
-    "zone": "ekimae",
-    "town": "大手",
-    "category": "gourmet",
-    "genre": "カフェ・スイーツ",
-    "instagram": "",
-    "is_paid": true,
-    "is_demo": true,
-    "catch": "窓ぎわでのんびり。季節のタルトと自家焙煎珈琲",
-    "description": "お城のお堀が見える小さな喫茶店です。自家焙煎の珈琲と、福井の果物を使った季節のタルトをご用意しています。お一人さまも大歓迎です。\n※これは掲載イメージの見本です。実在のお店ではありません。",
-    "hours": "9:00〜18:00",
-    "holiday": "月曜・第3火曜",
-    "links": [
-      {
-        "kind": "web",
-        "label": "ホームページ",
-        "url": "https://example.com/"
-      },
-      {
-        "kind": "gmap",
-        "label": "Googleマップ",
-        "url": "https://example.com/"
-      }
-    ],
-    "photos": [
-      {
-        "url": "./demo/cafe-1.jpg",
-        "caption": "季節のフルーツタルト"
-      },
-      {
-        "url": "./demo/cafe-2.jpg",
-        "caption": "ハンドドリップ"
-      },
-      {
-        "url": "./demo/cafe-4.jpg",
-        "caption": "焼きたてのクロワッサン"
-      },
-      {
-        "url": "./demo/cafe-3.jpg",
-        "caption": "テラス席"
-      }
-    ]
-  },
-  {
-    "slug": "demo-bar",
-    "name": "BAR ほしあかり（見本）",
-    "zone": "katamachi",
-    "town": "順化",
-    "category": "night",
-    "genre": "バー",
-    "instagram": "",
-    "is_paid": true,
-    "is_demo": true,
-    "catch": "一枚板のカウンターで、フルーツカクテルを",
-    "description": "片町の路地裏にあるオーセンティックバーです。福井の旬のフルーツを使ったカクテルと、ウイスキー200種をご用意。一軒目にも、締めの一杯にもどうぞ。\n※これは掲載イメージの見本です。実在のお店ではありません。",
-    "hours": "20:00〜翌3:00",
-    "holiday": "日曜",
-    "links": [
-      {
-        "kind": "x",
-        "label": "X",
-        "url": "https://example.com/"
-      },
-      {
-        "kind": "line",
-        "label": "LINE公式",
-        "url": "https://example.com/"
-      }
-    ],
-    "photos": [
-      {
-        "url": "./demo/bar-1.jpg",
-        "caption": "季節のフルーツカクテル"
-      },
-      {
-        "url": "./demo/bar-3.jpg",
-        "caption": "ボトルの並ぶバックバー"
-      },
-      {
-        "url": "./demo/bar-2.jpg",
-        "caption": "ウイスキーはストレートで"
-      }
-    ]
-  },
-  {
-    "slug": "demo-snack",
-    "name": "スナック ゆうなぎ（見本）",
-    "zone": "katamachi",
-    "town": "順化",
-    "category": "night",
-    "genre": "スナック・ラウンジ",
-    "instagram": "",
-    "is_paid": true,
-    "is_demo": true,
-    "catch": "はじめての方も気軽に。ママと歌って笑って",
-    "description": "片町で20年。初めての方、お一人さまも大歓迎です。90分飲み放題・カラオケ歌い放題のセットもあります。気軽にのぞいてみてください。\n※これは掲載イメージの見本です。実在のお店ではありません。",
-    "hours": "20:00〜翌1:00",
-    "holiday": "日曜・祝日",
-    "links": [
-      {
-        "kind": "line",
-        "label": "LINE公式",
-        "url": "https://example.com/"
-      },
-      {
-        "kind": "threads",
-        "label": "Threads",
-        "url": "https://example.com/"
-      }
-    ],
-    "photos": [
-      {
-        "url": "./demo/snack-1.jpg",
-        "caption": "カラオケは歌い放題"
-      },
-      {
-        "url": "./demo/snack-3.jpg",
-        "caption": "カラフルなボトル棚"
-      },
-      {
-        "url": "./demo/snack-2.jpg",
-        "caption": "乾杯のショットグラス"
-      }
-    ]
-  }
+ {
+  "slug": "demo-soba",
+  "name": "そば処 ふくふく庵（見本）",
+  "zone": "ekimae",
+  "town": "中央",
+  "category": "gourmet",
+  "genre": "そば・うどん",
+  "instagram": "",
+  "is_paid": true,
+  "is_demo": true,
+  "catch": "駅から3分、昼は打ちたてのおろしそば",
+  "description": "毎朝、福井県産のそば粉で手打ちしています。名物は大根おろしをたっぷりのせた越前おろしそば。夜は地酒と季節の一品料理でゆっくりどうぞ。\n※これは掲載イメージの見本です。実在のお店ではありません。",
+  "hours": "11:00〜14:30 ／ 17:30〜21:00（L.O. 20:30）",
+  "holiday": "水曜",
+  "links": [
+   {
+    "kind": "web",
+    "label": "ホームページ",
+    "url": "https://example.com/"
+   },
+   {
+    "kind": "tabelog",
+    "label": "食べログ",
+    "url": "https://example.com/"
+   },
+   {
+    "kind": "reserve",
+    "label": "予約する",
+    "url": "https://example.com/"
+   }
+  ],
+  "photos": [
+   {
+    "url": "./demo/soba-1.jpg",
+    "caption": "名物の辛味おろしそば"
+   },
+   {
+    "url": "./demo/soba-3.jpg",
+    "caption": "のれんの入口"
+   },
+   {
+    "url": "./demo/soba-2.jpg",
+    "caption": "昼の定食セット"
+   }
+  ],
+  "tel": "0776-00-1111"
+ },
+ {
+  "slug": "demo-cafe",
+  "name": "喫茶 ことり（見本）",
+  "zone": "ekimae",
+  "town": "大手",
+  "category": "gourmet",
+  "genre": "カフェ・スイーツ",
+  "instagram": "",
+  "is_paid": true,
+  "is_demo": true,
+  "catch": "窓ぎわでのんびり。季節のタルトと自家焙煎珈琲",
+  "description": "お城のお堀が見える小さな喫茶店です。自家焙煎の珈琲と、福井の果物を使った季節のタルトをご用意しています。お一人さまも大歓迎です。\n※これは掲載イメージの見本です。実在のお店ではありません。",
+  "hours": "9:00〜18:00",
+  "holiday": "月曜・第3火曜",
+  "links": [
+   {
+    "kind": "web",
+    "label": "ホームページ",
+    "url": "https://example.com/"
+   },
+   {
+    "kind": "gmap",
+    "label": "Googleマップ",
+    "url": "https://example.com/"
+   }
+  ],
+  "photos": [
+   {
+    "url": "./demo/cafe-1.jpg",
+    "caption": "季節のフルーツタルト"
+   },
+   {
+    "url": "./demo/cafe-2.jpg",
+    "caption": "ハンドドリップ"
+   },
+   {
+    "url": "./demo/cafe-4.jpg",
+    "caption": "焼きたてのクロワッサン"
+   },
+   {
+    "url": "./demo/cafe-3.jpg",
+    "caption": "テラス席"
+   }
+  ],
+  "tel": "0776-00-2222"
+ },
+ {
+  "slug": "demo-bar",
+  "name": "BAR ほしあかり（見本）",
+  "zone": "katamachi",
+  "town": "順化",
+  "category": "night",
+  "genre": "バー",
+  "instagram": "",
+  "is_paid": true,
+  "is_demo": true,
+  "catch": "一枚板のカウンターで、フルーツカクテルを",
+  "description": "片町の路地裏にあるオーセンティックバーです。福井の旬のフルーツを使ったカクテルと、ウイスキー200種をご用意。一軒目にも、締めの一杯にもどうぞ。\n※これは掲載イメージの見本です。実在のお店ではありません。",
+  "hours": "20:00〜翌3:00",
+  "holiday": "日曜",
+  "links": [
+   {
+    "kind": "x",
+    "label": "X",
+    "url": "https://example.com/"
+   },
+   {
+    "kind": "line",
+    "label": "LINE公式",
+    "url": "https://example.com/"
+   }
+  ],
+  "photos": [
+   {
+    "url": "./demo/bar-1.jpg",
+    "caption": "季節のフルーツカクテル"
+   },
+   {
+    "url": "./demo/bar-3.jpg",
+    "caption": "ボトルの並ぶバックバー"
+   },
+   {
+    "url": "./demo/bar-2.jpg",
+    "caption": "ウイスキーはストレートで"
+   }
+  ],
+  "tel": "0776-00-3333"
+ },
+ {
+  "slug": "demo-snack",
+  "name": "スナック ゆうなぎ（見本）",
+  "zone": "katamachi",
+  "town": "順化",
+  "category": "night",
+  "genre": "スナック・ラウンジ",
+  "instagram": "",
+  "is_paid": true,
+  "is_demo": true,
+  "catch": "はじめての方も気軽に。ママと歌って笑って",
+  "description": "片町で20年。初めての方、お一人さまも大歓迎です。90分飲み放題・カラオケ歌い放題のセットもあります。気軽にのぞいてみてください。\n※これは掲載イメージの見本です。実在のお店ではありません。",
+  "hours": "20:00〜翌1:00",
+  "holiday": "日曜・祝日",
+  "links": [
+   {
+    "kind": "line",
+    "label": "LINE公式",
+    "url": "https://example.com/"
+   },
+   {
+    "kind": "threads",
+    "label": "Threads",
+    "url": "https://example.com/"
+   }
+  ],
+  "photos": [
+   {
+    "url": "./demo/snack-1.jpg",
+    "caption": "カラオケは歌い放題"
+   },
+   {
+    "url": "./demo/snack-3.jpg",
+    "caption": "カラフルなボトル棚"
+   },
+   {
+    "url": "./demo/snack-2.jpg",
+    "caption": "乾杯のショットグラス"
+   }
+  ],
+  "tel": "0776-00-4444"
+ }
 ]

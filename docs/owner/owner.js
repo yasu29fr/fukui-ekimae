@@ -7,7 +7,7 @@ const MAX_PHOTOS = 5, MAX_LINKS = 10;
 const PERKS = [
   "お店の情報をこの画面から直接編集",
   "写真を5枚まで掲載（一覧ではトップ写真つきで表示）",
-  "ひとこと・紹介文・営業時間・定休日を掲載",
+  "ひとこと・紹介文・営業時間・定休日・電話番号を掲載（電話番号はタップで電話）",
   "ホームページ・食べログ・予約ページなど、リンクを10件まで",
   "一覧で上のほうに表示（PR表記つき）",
   "Threads @" + (cfg.threads || "fukui_ekimae") + " での紹介投稿（PR表記つき）",
@@ -157,6 +157,7 @@ async function renderPaid(body, shop, sub) {
         <label>紹介文（400字まで）<textarea name="description" rows="6" maxlength="400">${esc(shop.description)}</textarea></label>
         <label>営業時間<input name="hours" maxlength="100" value="${esc(shop.hours)}" placeholder="例：18:00〜24:00（L.O. 23:30）" /></label>
         <label>定休日<input name="holiday" maxlength="100" value="${esc(shop.holiday)}" placeholder="例：日曜・祝日" /></label>
+        <label>電話番号（お店のページに出ます。タップで電話がかかります。出したくないときは空に）<input name="tel" type="tel" maxlength="20" value="${esc(shop.tel)}" placeholder="例：0776-00-0000" /></label>
         <label>Instagram（@ のあと）<input name="instagram" maxlength="30" pattern="[A-Za-z0-9_.]*" value="${esc(shop.instagram)}" /></label>
         <button class="btn" type="submit">保存する</button>
       </form>
@@ -215,7 +216,7 @@ async function renderPaid(body, shop, sub) {
     const f = e.target;
     const { error } = await sb.from("shops").update({
       catch: f.catch.value.trim(), description: f.description.value.trim(), hours: f.hours.value.trim(),
-      holiday: f.holiday.value.trim(), instagram: f.instagram.value.trim().replace(/^@/, ""),
+      holiday: f.holiday.value.trim(), tel: f.tel.value.trim(), instagram: f.instagram.value.trim().replace(/^@/, ""),
     }).eq("id", shop.id);
     error ? toast("保存できませんでした：" + error.message, "error") : (toast("保存しました。"), reload());
   });
