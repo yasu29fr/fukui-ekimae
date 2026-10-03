@@ -48,7 +48,7 @@ export function stripe(): Stripe {
 }
 
 // 「戻り先」URL は自分のサイトのものだけ受け付ける（よそへの転送に使われないように）
-export const SITE_URL = (Deno.env.get("SITE_URL") || "https://yu-fukui.github.io/fukui-ekimae/").replace(/\/?$/, "/");
+export const SITE_URL = (Deno.env.get("SITE_URL") || "https://ekimae.fukui-fukui.com/").replace(/\/?$/, "/");
 
 export function safeReturn(url: unknown): string {
   if (typeof url === "string" && url.startsWith(SITE_URL)) return url;

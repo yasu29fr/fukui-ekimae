@@ -2,7 +2,7 @@
 
 福井駅前・片町のグルメと夜のお店（バー・スナック・ラウンジ）のガイドサイトと、Threads **@fukui_ekimae** の運用の仕組みです。
 
-- 公開サイト：`https://yu-fukui.github.io/fukui-ekimae/`
+- 公開サイト：`https://ekimae.fukui-fukui.com/`
 - Supabase：プロジェクト `fukui-ekimae`（組織 YU_GBP・東京、ID `zynxnpwwmrxzyljrsmbs`）
 - お店の管理画面：`/owner/`（運営が招待したお店の方だけ）
 - 運営管理：`/admin/`（運営者だけ）
@@ -42,7 +42,7 @@
 
 ## 書体
 
-- 本文：**DNP 秀英角ゴシック銀 Std**（Adobe Fonts。キット `qdm5ekk`、登録ドメイン `yu-fukui.github.io`）＋ **YakuHanJP**（約物を半角に）
+- 本文：**DNP 秀英角ゴシック銀 Std**（Adobe Fonts。キット `qdm5ekk`、登録ドメイン `ekimae.fukui-fukui.com`）＋ **YakuHanJP**（約物を半角に）
 - 夜の見出し：M PLUS Rounded 1c、英字：Jost（Google Fonts）
 - 独自ドメインにしたら、[fonts.adobe.com](https://fonts.adobe.com/my_fonts#web_projects-section) のこのキットにドメインを足す（足さないと、そのドメインでは秀英角ゴシック銀が出ず、Zen Kaku Gothic New で表示される）
 
@@ -57,8 +57,8 @@
    3. `private/shops_private.sql`（住所・電話・出典。**リポジトリには入っていない**。運営の手元にあるものを使う）
 3. Authentication → Sign In / Providers → Email：**Allow new users to sign up をオフ**。
 4. Authentication → URL Configuration：
-   - Site URL：`https://yu-fukui.github.io/fukui-ekimae/`
-   - Redirect URLs：`https://yu-fukui.github.io/fukui-ekimae/owner/` と `https://yu-fukui.github.io/fukui-ekimae/admin/`
+   - Site URL：`https://ekimae.fukui-fukui.com/`
+   - Redirect URLs：`https://ekimae.fukui-fukui.com/owner/` と `https://ekimae.fukui-fukui.com/admin/`
 5. Authentication → Emails：**SMTP を設定する**（Resend・Gmail など）。Supabase 標準のメール送信は1時間に数通までしか送れず、招待メールが届かなくなる。
    メールの文面（Invite user / Magic link）は日本語に書き換える。例：件名「ふくふく｜福井エキマエ お店の管理画面へのご招待」。
 6. Authentication → Users → Add user → Create new user で、運営者（`admins` 表のアドレス）を作る。
@@ -74,7 +74,7 @@
 supabase link --project-ref <プロジェクトID>
 supabase functions deploy invite-owner create-checkout customer-portal
 supabase functions deploy stripe-webhook --no-verify-jwt
-supabase secrets set SITE_URL=https://yu-fukui.github.io/fukui-ekimae/
+supabase secrets set SITE_URL=https://ekimae.fukui-fukui.com/
 ```
 
 Stripe の設定（次の 3.）が済んだら：
