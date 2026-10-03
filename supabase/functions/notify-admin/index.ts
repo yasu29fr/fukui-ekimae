@@ -26,7 +26,7 @@ export async function compose(p: Payload, shopName: Deps["shopName"]): Promise<M
   if (p.table === "inquiries") {
     return {
       subject: `【ふくふく】お問い合わせ：${r.shop_name}`,
-      text: `お店の方からお問い合わせが届きました。\n\n店名：${r.shop_name}\n連絡先：${r.contact}\n\n${r.message || "（本文なし）"}\n\n管理画面：${ADMIN_URL()}`,
+      text: `サイトからお問い合わせが届きました。\n\n店名：${r.shop_name}\n連絡先：${r.contact}\n\n${r.message || "（本文なし）"}\n\n管理画面：${ADMIN_URL()}`,
     };
   }
   if (p.table === "update_requests") {

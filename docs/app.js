@@ -325,7 +325,7 @@
       if (location.hash.startsWith("#/shop/")) location.hash = "#/"; else renderList();
     });
   }
-  // 「掲載について問い合わせる」（#inquiry）から来たときは、お店の方へのフォームを開いてそこへ移る
+  // 「掲載について問い合わせる」（#inquiry）から来たときは、問い合わせフォームを開いてそこへ移る
   function openInquiry() {
     const d = $("#inquiry"); d.open = true;
     setTimeout(() => d.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
