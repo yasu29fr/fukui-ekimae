@@ -78,8 +78,26 @@ def q(s: str) -> str:
     return "'" + (s or "").replace("'", "''") + "'"
 
 
+def previous_slugs() -> tuple[dict, dict]:
+    """前回作った初期データから、電話番号→slug と 店名→slug の対応を読む。
+    店名や住所が少し変わっても、同じ店の URL（slug）が変わらないようにするため。"""
+    by_tel, by_name = {}, {}
+    pp = ROOT / "private/shops_private.sql"
+    if pp.exists():
+        for m in re.finditer(r"tel='([^']*)'.*?where slug='([^']+)'", pp.read_text(encoding="utf-8")):
+            if m.group(1):
+                by_tel.setdefault(m.group(1), m.group(2))
+    pj = ROOT / "docs/data/shops.json"
+    if pj.exists():
+        for s in json.loads(pj.read_text(encoding="utf-8")):
+            by_name.setdefault(norm(s["name"]), s["slug"])
+    return by_tel, by_name
+
+
 def main(path: str) -> None:
     rows = list(csv.DictReader(open(path, encoding="utf-8-sig")))
+    by_tel, by_name = previous_slugs()
+    used: set[str] = set()
     pub, priv, js = [], [], []
     for r in rows:
         zone = ZONE.get(r["区分"])
@@ -90,7 +108,10 @@ def main(path: str) -> None:
         # 夜のお店は、ジャンルがバー・スナック・ラウンジの店だけ。
         # （情報源の分類「居酒屋・バー」などに引きずられて、居酒屋や和食が夜に入らないように）
         category = "night" if g in NIGHT_GENRES else "gourmet"
-        slug = slug_of(r["店名"], r["住所"])
+        # 前回と同じ店（電話番号か店名が同じ）なら前回の slug を使う。初めての店だけ新しく作る
+        slug = next((x for x in (by_tel.get(r["電話"]), by_name.get(norm(r["店名"]))) if x and x not in used), None) \
+            or slug_of(r["店名"], r["住所"])
+        used.add(slug)
         pub.append(f"({q(slug)},{q(norm(r['店名']))},{q(zone)},{q(r['町'])},{q(category)},{q(g)},{q(handle_of(r['公式Instagram']))})")
         js.append(dict(slug=slug, name=norm(r["店名"]), zone=zone, town=r["町"], category=category,
                        genre=g, instagram=handle_of(r["公式Instagram"]), is_paid=False))
