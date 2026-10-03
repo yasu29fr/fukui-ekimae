@@ -71,10 +71,21 @@ async function showInquiries(pane) {
   pane.innerHTML = `<section class="panel"><h2><span class="en">INQUIRIES</span>掲載の問い合わせ</h2>${data?.length ? `<ul class="list">${data.map((r) => `
     <li data-id="${r.id}"><div class="spread"><strong>${esc(r.shop_name)}</strong><span class="small muted">${fmtDate(r.created_at)}</span></div>
       <p class="small">連絡先：${esc(r.contact)}</p><p style="white-space:pre-wrap;margin:4px 0">${esc(r.message)}</p>
-      ${r.status === "open" ? '<button class="btn-ghost" data-done>対応済みにする</button>' : '<span class="badge paid">対応済み</span>'}</li>`).join("")}</ul>` : '<p class="muted">問い合わせはありません。</p>'}</section>`;
+      <div class="row">${r.status === "open" ? '<button class="btn-ghost" data-done>対応済みにする</button>' : '<span class="badge paid">対応済み</span>'}
+        <button class="btn-ghost danger" data-del>削除</button></div></li>`).join("")}</ul>` : '<p class="muted">問い合わせはありません。</p>'}</section>`;
   pane.addEventListener("click", async (e) => {
-    const b = e.target.closest("[data-done]"); if (!b) return;
-    await sb.from("inquiries").update({ status: "done" }).eq("id", b.closest("li").dataset.id); show();
+    const done = e.target.closest("[data-done]"), del = e.target.closest("[data-del]");
+    if (!done && !del) return;
+    const li = (done || del).closest("li"), id = li.dataset.id;
+    if (del) {
+      if (!confirm(`「${li.querySelector("strong").textContent}」の問い合わせを削除します。元に戻せません。よろしいですか？`)) return;
+      const { error } = await sb.from("inquiries").delete().eq("id", id);
+      if (error) return toast("削除できませんでした：" + error.message);
+      toast("削除しました");
+    } else {
+      await sb.from("inquiries").update({ status: "done" }).eq("id", id);
+    }
+    show();
   });
 }
 
