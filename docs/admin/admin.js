@@ -1,11 +1,12 @@
 // 運営管理画面：問い合わせ・更新依頼・店の編集・オーナー招待・写真の非表示
-import { sb, ready, $, esc, ZONES, PLANS, photoUrl, isPaid, fmtDate, callFn, toast, renderLogin, showWho } from "../lib/common.js?v=2";
+import { sb, ready, $, esc, ZONES, PLANS, photoUrl, isPaid, fmtDate, callFn, toast, renderLogin, showWho } from "../lib/common.js?v=3";
 
 const root = $("#root");
 const TOWNS = ["大手", "順化", "中央", "つくも", "照手", "手寄", "日之出"];
 const GENRES = ["和食", "寿司・海鮮", "そば・うどん", "ラーメン", "焼肉・肉料理", "焼鳥・串", "居酒屋", "イタリアン・フレンチ",
   "中華", "アジア・各国料理", "カフェ・スイーツ", "洋食", "バー", "スナック・ラウンジ", "その他"];
 let tab = "requests";
+let inqTrash = false;   // 問い合わせ：ゴミ箱を見ているか
 let cat = "";   // 店・写真の区分：""=すべて / gourmet / night
 const CATS = [["", "すべて"], ["gourmet", "グルメ"], ["night", "夜のお店"]];
 const catSeg = () => `<div class="seg cat-seg" role="group" aria-label="区分">${CATS.map(([k, v]) => `<button type="button" data-cat="${k}" aria-pressed="${cat === k}">${v}</button>`).join("")}</div>`;
@@ -33,7 +34,7 @@ else {
 async function show() {
   const [{ count: nReq }, { count: nInq }] = await Promise.all([
     sb.from("update_requests").select("id", { count: "exact", head: true }).eq("status", "open"),
-    sb.from("inquiries").select("id", { count: "exact", head: true }).eq("status", "open"),
+    sb.from("inquiries").select("id", { count: "exact", head: true }).eq("status", "open").is("deleted_at", null),
   ]);
   root.innerHTML = `
     <div class="tabs" role="tablist">
@@ -67,26 +68,42 @@ async function showRequests(pane) {
 }
 
 async function showInquiries(pane) {
-  const { data } = await sb.from("inquiries").select("*").order("status").order("created_at", { ascending: false }).limit(100);
-  pane.innerHTML = `<section class="panel"><h2><span class="en">INQUIRIES</span>掲載の問い合わせ</h2>${data?.length ? `<ul class="list">${data.map((r) => `
+  // 削除するとゴミ箱へ（deleted_at に日時が入る）。ゴミ箱から元に戻すか、完全に削除できる
+  let q = sb.from("inquiries").select("*");
+  q = inqTrash ? q.not("deleted_at", "is", null).order("deleted_at", { ascending: false })
+               : q.is("deleted_at", null).order("status").order("created_at", { ascending: false });
+  const [{ data }, { count: nTrash }] = await Promise.all([
+    q.limit(100),
+    sb.from("inquiries").select("id", { count: "exact", head: true }).not("deleted_at", "is", null),
+  ]);
+  const acts = (r) => inqTrash
+    ? `<button class="btn-ghost" data-restore>元に戻す</button><button class="btn-ghost danger" data-purge>完全に削除</button>
+       <span class="small muted">${fmtDate(r.deleted_at)} にゴミ箱へ</span>`
+    : `${r.status === "open" ? '<button class="btn-ghost" data-done>対応済みにする</button>' : '<span class="badge paid">対応済み</span>'}
+       <button class="btn-ghost danger" data-trash>ゴミ箱へ</button>`;
+  pane.innerHTML = `<section class="panel"><div class="spread"><h2><span class="en">${inqTrash ? "TRASH" : "INQUIRIES"}</span>${inqTrash ? "ゴミ箱" : "掲載の問い合わせ"}</h2>
+      <button class="btn-ghost" data-toggle-trash>${inqTrash ? "← 問い合わせ一覧へ" : `ゴミ箱${nTrash ? `（${nTrash}件）` : ""}`}</button></div>
+    ${data?.length ? `<ul class="list">${data.map((r) => `
     <li data-id="${r.id}"><div class="spread"><strong>${esc(r.shop_name)}</strong><span class="small muted">${fmtDate(r.created_at)}</span></div>
       <p class="small">連絡先：${esc(r.contact)}</p><p style="white-space:pre-wrap;margin:4px 0">${esc(r.message)}</p>
-      <div class="row">${r.status === "open" ? '<button class="btn-ghost" data-done>対応済みにする</button>' : '<span class="badge paid">対応済み</span>'}
-        <button class="btn-ghost danger" data-del>削除</button></div></li>`).join("")}</ul>` : '<p class="muted">問い合わせはありません。</p>'}</section>`;
-  pane.addEventListener("click", async (e) => {
-    const done = e.target.closest("[data-done]"), del = e.target.closest("[data-del]");
-    if (!done && !del) return;
-    const li = (done || del).closest("li"), id = li.dataset.id;
-    if (del) {
-      if (!confirm(`「${li.querySelector("strong").textContent}」の問い合わせを削除します。元に戻せません。よろしいですか？`)) return;
-      const { error } = await sb.from("inquiries").delete().eq("id", id);
-      if (error) return toast("削除できませんでした：" + error.message);
-      toast("削除しました");
-    } else {
-      await sb.from("inquiries").update({ status: "done" }).eq("id", id);
-    }
+      <div class="row">${acts(r)}</div></li>`).join("")}</ul>` : `<p class="muted">${inqTrash ? "ゴミ箱は空です。" : "問い合わせはありません。"}</p>`}</section>`;
+  pane.onclick = async (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    if ("toggleTrash" in b.dataset) { inqTrash = !inqTrash; return show(); }
+    const li = b.closest("li"); if (!li) return;
+    const id = li.dataset.id, name = li.querySelector("strong").textContent;
+    let res;
+    if ("done" in b.dataset) res = await sb.from("inquiries").update({ status: "done" }).eq("id", id);
+    else if ("trash" in b.dataset) res = await sb.from("inquiries").update({ deleted_at: new Date().toISOString() }).eq("id", id);
+    else if ("restore" in b.dataset) res = await sb.from("inquiries").update({ deleted_at: null }).eq("id", id);
+    else if ("purge" in b.dataset) {
+      if (!confirm(`「${name}」の問い合わせを完全に削除します。元に戻せません。よろしいですか？`)) return;
+      res = await sb.from("inquiries").delete().eq("id", id);
+    } else return;
+    if (res.error) return toast("できませんでした：" + res.error.message);
+    toast("trash" in b.dataset ? "ゴミ箱に移しました" : "restore" in b.dataset ? "元に戻しました" : "purge" in b.dataset ? "完全に削除しました" : "対応済みにしました");
     show();
-  });
+  };
 }
 
 async function showShops(pane) {

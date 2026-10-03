@@ -63,6 +63,8 @@ export function createDemoClient(role) {
     select(sel = "*", o = {}) { if (this.op === "select") this.sel = sel; this.head = o.head; this.wantRows = true; return this; }
     eq(c, v) { this.filters.push((r) => r[c] === v); return this; }
     neq(c, v) { this.filters.push((r) => r[c] !== v); return this; }
+    is(c, v) { this.filters.push((r) => (r[c] ?? null) === v); return this; }
+    not(c, op, v) { this.filters.push((r) => (r[c] ?? null) !== v); return this; }
     in(c, a) { this.filters.push((r) => a.includes(r[c])); return this; }
     ilike(c, p) { const re = new RegExp(p.replace(/%/g, ".*"), "i"); this.filters.push((r) => re.test(r[c] || "")); return this; }
     order(c, o = {}) { this.sortBy = [c, o.ascending !== false]; return this; }
