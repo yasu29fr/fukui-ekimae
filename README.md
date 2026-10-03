@@ -95,10 +95,8 @@ supabase secrets set RESEND_API_KEY=re_... NOTIFY_TO=yasu29fr@gmail.com \
 1. [Resend](https://resend.com) の API キーを使う（Auth の SMTP を Resend にしているなら同じキーでよい）。
    送信元のドメインを Resend で認証するまでは、`NOTIFY_FROM` を省くと `onboarding@resend.dev` から、
    Resend に登録したメールアドレス宛てにだけ送れる。
-2. Supabase の Database → Webhooks で、次の 2 つを作る（どちらも同じ設定）。
-   - 表：`inquiries`（お問い合わせ）と `update_requests`（更新依頼）、イベント：Insert
-   - 種類：Supabase Edge Functions → `notify-admin`、メソッド：POST
-   - HTTP Headers に `x-webhook-secret: <NOTIFY_WEBHOOK_SECRET と同じ文字列>` を追加
+2. `supabase/migrations/0003_notify_admin.sql` のプロジェクトIDと合言葉を置き換えて、SQL Editor で実行する
+   （お問い合わせ・更新依頼が入ったら notify-admin を呼ぶトリガー）。
 3. サイトのお問い合わせフォームから送ってみて、メールが届くか確かめる。
 
 ### 3. Stripe
