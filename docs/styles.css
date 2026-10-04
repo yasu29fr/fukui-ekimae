@@ -6,7 +6,7 @@
   --bg: #f7f6e4; --surface: #ffffff; --ink: #0d0d0f; --muted: #6b6858; --line: #e4e1cc;
   --hd: #0b0b0d; --hd-deep: #000000; --hd-ink: #ffffff;
   --main: #0d0d0f; --main-soft: #eeecd8; --accent: #c4372c; --accent-soft: #f8e6e3;
-  --stamp: #c4372c; --pr: #c4372c; --pr-soft: #fcefed; --band: #c4372c;
+  --stamp: #c4372c; --stamp-bg: #fffdf8; --pr: #c4372c; --pr-soft: #fcefed; --band: #c4372c;
   --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 8px 22px rgba(0, 0, 0, .05);
   --tabbar: 64px; --radius: 18px;
   --f-body: "YakuHanJP", "dnp-shuei-gothic-gin-std", "Zen Kaku Gothic New", "Hiragino Sans", system-ui, sans-serif;
@@ -18,7 +18,7 @@ body[data-mode="night"] {
   --bg: #f2f2ea; --surface: #fffefa; --ink: #33283f; --muted: #6c6276; --line: #d9d0bf;
   --hd: #62448c; --hd-deep: #4b3370; --hd-ink: #ffffff;
   --main: #62448c; --main-soft: #ece6f3; --accent: #dea426; --accent-soft: #faf0d9;
-  --stamp: #a87612; --pr: #8a6410; --pr-soft: #f8edd2; --band: #dea426;
+  --stamp: #a87612; --stamp-bg: #f7efdc; --pr: #8a6410; --pr-soft: #f8edd2; --band: #dea426;
   --shadow: 0 1px 2px rgba(60, 40, 90, .06), 0 8px 22px rgba(60, 40, 90, .08);
 }
 * { box-sizing: border-box; }
@@ -145,6 +145,11 @@ body[data-mode="night"] .band { color: #3a2c05; }
 .t-main { display: grid; grid-template-columns: 58px 1fr; gap: 4px 14px; padding: 16px 16px 14px 20px; }
 .stamp { width: 56px; height: 56px; border-radius: 50%; border: 2.5px dashed var(--stamp); color: var(--stamp); align-self: start;
   display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; transform: rotate(-8deg); font-size: 1.4rem; }
+.stamp { background: var(--stamp-bg); }
+.stamp .gi { width: 36px; height: 36px; object-fit: contain; transform: rotate(8deg); }
+body[data-mode="day"] .stamp .gi { transform: rotate(4deg); }
+.d-ticket .stamp .gi { width: 42px; height: 42px; }
+.chip .gi { width: 22px; height: 22px; object-fit: contain; vertical-align: -6px; margin-right: 3px; }
 .stamp small { font-size: .52rem; font-weight: 800; margin-top: 3px; letter-spacing: .04em; }
 .t-text { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .t-tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: .7rem; font-weight: 800; }

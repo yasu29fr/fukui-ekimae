@@ -4,11 +4,13 @@
   const cfg = window.FUKUFUKU_CONFIG || {};
   const hasDb = Boolean(cfg.supabaseUrl && cfg.supabaseAnonKey);
   const PAGE = 30;
-  const ICONS = {
-    "和食": "🍱", "寿司・海鮮": "🍣", "そば・うどん": "🥢", "ラーメン": "🍜", "焼肉・肉料理": "🥩",
-    "焼鳥・串": "🍢", "居酒屋": "🏮", "イタリアン・フレンチ": "🍝", "中華": "🥟", "アジア・各国料理": "🍛",
-    "カフェ・スイーツ": "☕", "洋食": "🍽", "バー": "🍸", "スナック・ラウンジ": "🎤", "その他": "🍴",
+  // ジャンルの色鉛筆アイコン（docs/img/genre/）
+  const GENRE_IMG = {
+    "和食": "washoku", "寿司・海鮮": "sushi", "そば・うどん": "soba", "ラーメン": "ramen", "焼肉・肉料理": "yakiniku",
+    "焼鳥・串": "yakitori", "居酒屋": "izakaya", "イタリアン・フレンチ": "italian", "中華": "chuka", "アジア・各国料理": "asia",
+    "カフェ・スイーツ": "cafe", "洋食": "yoshoku", "バー": "bar", "スナック・ラウンジ": "snack", "その他": "other",
   };
+  const gicon = (g) => `<img class="gi" src="./img/genre/${GENRE_IMG[g] || "other"}.webp" alt="" width="48" height="48" loading="lazy" decoding="async" />`;
   const ZONES = { ekimae: "駅前", katamachi: "片町" };
   const SHORT = { "寿司・海鮮": "寿司", "そば・うどん": "そば", "焼肉・肉料理": "焼肉", "焼鳥・串": "焼鳥", "イタリアン・フレンチ": "洋風",
     "アジア・各国料理": "各国", "カフェ・スイーツ": "カフェ", "スナック・ラウンジ": "スナック" };
@@ -125,12 +127,12 @@
     const genres = Object.keys(counts).sort((a, b) => (a === "その他") - (b === "その他") || counts[b] - counts[a]);
     if (state.genre && !counts[state.genre]) state.genre = "";
     $("#genre-chips").innerHTML = [`<button class="chip" data-genre="" aria-pressed="${!state.genre}">すべて</button>`]
-      .concat(genres.map((g) => `<button class="chip" data-genre="${esc(g)}" aria-pressed="${state.genre === g}">${ICONS[g] || ""} ${esc(g)}<small>${counts[g]}</small></button>`))
+      .concat(genres.map((g) => `<button class="chip" data-genre="${esc(g)}" aria-pressed="${state.genre === g}">${gicon(g)}${esc(g)}<small>${counts[g]}</small></button>`))
       .join("");
   }
 
   function stamp(s) {
-    return `<span class="stamp" aria-hidden="true">${ICONS[s.genre] || "🍴"}<small>${esc(SHORT[s.genre] || s.genre)}</small></span>`;
+    return `<span class="stamp" aria-hidden="true">${gicon(s.genre)}<small>${esc(SHORT[s.genre] || s.genre)}</small></span>`;
   }
   function area(s) {
     return `<span class="t-area">${svg("pin")}${esc(ZONES[s.zone] || "")}${s.town ? "・" + esc(s.town) : ""}</span>`;
