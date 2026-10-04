@@ -282,7 +282,7 @@
       <aside class="d-owner">
         <p class="eyebrow"><span class="band">FOR SHOPS</span></p>
         <h2>このお店の方へ</h2>
-        <p>写真・紹介文・営業時間・予約ページなどを載せて、一覧の上のほうに表示できます（有料プラン：月額1,000円〜）。情報の修正だけでもお気軽にどうぞ。</p>
+        <p>店舗会員登録をしていただくと、写真・紹介文・営業時間・予約ページなどを載せることができます。</p>
         <a class="btn" href="#inquiry">掲載について問い合わせる</a>
       </aside>`}
       ${near.length ? `
