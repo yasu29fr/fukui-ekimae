@@ -45,6 +45,10 @@
     if (saved.mode === "night" || saved.mode === "day") state.mode = saved.mode;
     if (saved.zone in ZONES) state.zone = saved.zone;
   } catch (_) { /* 保存できない環境では毎回初期値 */ }
+  // ?mode=night&zone=katamachi のようなリンク（片町ガイドなど）から来たときは、それを優先する
+  const qp = new URLSearchParams(location.search);
+  if (qp.get("mode") === "night" || qp.get("mode") === "day") state.mode = qp.get("mode");
+  if (qp.get("zone") in ZONES) state.zone = qp.get("zone");
   const remember = () => { try { localStorage.setItem("fukufuku", JSON.stringify({ mode: state.mode, zone: state.zone })); } catch (_) {} };
 
   // 見本（?demo=1）の写真は url を持つ。本番の写真は Supabase のパス。
@@ -309,7 +313,7 @@
     if (m) return renderDetail(decodeURIComponent(m[1]));
     $("#detail").hidden = true;
     $("#app").hidden = false;
-    document.title = "ふくふく｜福井エキマエ — 福井駅前・片町のグルメと夜のお店";
+    document.title = "福井駅前・片町のランチ・居酒屋とバー・スナック｜ふくふく 福井エキマエ";
     renderList();
   }
 
