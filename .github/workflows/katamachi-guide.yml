@@ -1,0 +1,24 @@
+name: 片町ガイドの一覧を更新
+
+on:
+  schedule:
+    - cron: "17 20 * * *"   # 毎朝 5:17（日本時間）
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: お店の一覧を作り直す
+        run: python scripts/build_guide.py
+      - name: コミットする
+        run: |
+          ./scripts/commit_file.sh docs/katamachi/index.html "chore(guide): 片町ガイドのお店一覧を更新"
+          ./scripts/commit_file.sh docs/sitemap.xml "chore(guide): サイトマップの更新日を直す"

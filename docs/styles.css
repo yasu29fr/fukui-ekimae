@@ -90,6 +90,7 @@ body[data-mode="night"] .band { color: #3a2c05; }
 .ph-row { display: flex; align-items: center; gap: 12px; padding-bottom: 14px; border-bottom: 3px dotted var(--line); }
 .ph-icon { width: 44px; height: 44px; border-radius: 14px; background: var(--main); color: #fff; display: grid; place-items: center; flex: none; transition: background .35s; }
 .ph-row h1 { margin: 0; font-size: 1.5rem; font-weight: 800; letter-spacing: .06em; }
+.ph-row h1 .ph-pre { display: block; font-size: .78rem; font-weight: 700; letter-spacing: .04em; opacity: .7; }
 .ph-count { margin-left: auto; color: var(--muted); font-size: .8rem; font-weight: 700; }
 .ph-count b { font-size: 1.6rem; font-weight: 500; letter-spacing: .02em; color: var(--main); margin-right: 3px; }
 
