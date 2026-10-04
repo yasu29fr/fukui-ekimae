@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /owner/
+Disallow: /yoyaku/
+Disallow: /demo/
+
+Sitemap: https://ekimae.fukui-fukui.com/sitemap.xml
